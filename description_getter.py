@@ -45,18 +45,6 @@ class ServiceDescriptionGetter:
             return None
 
     @classmethod
-    def get_links_from_table(cls, soup):
-        table = soup.find_all('table')
-
-        for row in table.tbody.find_all('tr'):
-            # Find all data for each column
-            columns = row.find_all('td')
-            for td in columns:
-                if td.a  and  'href' in td.a.attrs and td.a['href'].lower().endswith("readme.md"):
-                    return  td.a['href']
-        return None
-
-    @classmethod
     def get_readme_text(cls, url):
         if "https://github.com" not in url:
             return ""
@@ -89,8 +77,6 @@ class ServiceDescriptionGetter:
             return ""
         return content
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     dir_path = "json"
     count = 0
@@ -111,4 +97,3 @@ if __name__ == '__main__':
     print(count)
 
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
