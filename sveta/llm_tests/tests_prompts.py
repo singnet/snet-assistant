@@ -31,7 +31,6 @@ class ServiceAdviser:
 
 
 if __name__ == '__main__':
-    key = "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"
     descriptions = get_descriptions()
     sentence = "I have mp3 audio file, which contains some speech in russian language. I would like to get translation of this speech. Do you have service which can help me this this issue?"
     adviser = ServiceAdviser(descriptions)
