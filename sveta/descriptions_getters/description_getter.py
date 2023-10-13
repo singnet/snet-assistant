@@ -11,10 +11,11 @@ import logging
 
 
 class ServiceDescription:
-    def __init__(self,  url, short_description="", description=""):
+    def __init__(self,  display_name, url, short_description="", description=""):
         self.url = url
         self.short_description = short_description
         self.description = description
+        self.display_name = display_name
 
 
 class ServiceDescriptionGetter:
@@ -26,7 +27,8 @@ class ServiceDescriptionGetter:
             if os.path.exists(json_file_path):
                 with open(json_file_path, 'r') as f:
                     data = json.load(f)
-                if ('service_description'  in data):
+                if ('service_description' in data) and ('display_name' in data):
+                    display_name = data['display_name']
                     description = data['service_description']
                     url = None
                     if "url" in description:
@@ -37,8 +39,8 @@ class ServiceDescriptionGetter:
                     description_ = None
                     if 'description' in description:
                         description_ = description['description']
-                    if (url is not None )and (description_ is not None) and (short_description is not None):
-                        return ServiceDescription(url, short_description, description_)
+                    if (url is not None) and (description_ is not None) and (short_description is not None):
+                        return ServiceDescription(display_name, url, short_description, description_)
             return None
         except Exception as ex:
             cls.log.error(f"get_description: Exception occurred for json file {json_file_path}: {ex}")
@@ -78,7 +80,7 @@ class ServiceDescriptionGetter:
         return content
 
 if __name__ == '__main__':
-    dir_path = "json"
+    dir_path = "../../json"
     count = 0
     for file_path in os.listdir(dir_path):
         # check if current file_path is a file
