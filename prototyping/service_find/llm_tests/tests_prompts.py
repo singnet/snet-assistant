@@ -1,8 +1,11 @@
 import json
 import os
-from prototyping.sveta.descriptions_getters.description_getter import ServiceDescriptionGetter
-from prototyping.sveta.llm_tests.gpt_caller import OpenAIChatCaller, MessageType, Message
+
 from copy import deepcopy
+
+from prototyping.service_find.descriptions_getters.description_getter import ServiceDescriptionGetter
+from prototyping.service_find.llm_tests.gpt_caller import OpenAIChatCaller, Message, MessageType
+
 
 def get_descriptions():
     dir_path = "../../../json"
