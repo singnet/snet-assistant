@@ -80,7 +80,7 @@ class ServiceDescriptionGetter:
         return content
 
 if __name__ == '__main__':
-    dir_path = "../../json"
+    dir_path = "../../../json"
     count = 0
     for file_path in os.listdir(dir_path):
         # check if current file_path is a file
@@ -93,9 +93,9 @@ if __name__ == '__main__':
                     #print(json_file)
                     count = count + 1
                 elif "https://github.com" in description.url:
-                    print("no git readme:", json_file)
+                    print("no git readme:", description.url)
                 else:
-                    print("no git:", json_file)
+                    print("no git:", description.url)
     print(count)
 
 
