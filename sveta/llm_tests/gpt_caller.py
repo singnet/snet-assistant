@@ -32,7 +32,7 @@ class AgentOutputParser:
         return response
 
 class MessageType(Enum):
-    ASSISTANT = "you"
+    ASSISTANT = "assistant"
     SYSTEM = "system"
     USER = "user"
 
@@ -192,7 +192,6 @@ class OpenAIChatCaller:
             reply = self.__send_message(message)
             self.log.info(f"get_response got result: {reply}")
             result.update({"reply": reply})
-            self.history.add_history(Message(MessageType.ASSISTANT, reply))
         except Exception as ex:
             self.log.info(f"get_response error: {ex}")
             result.update({"reply": "I have some problems during response generation. Please repeat"})

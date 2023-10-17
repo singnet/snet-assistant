@@ -1,7 +1,8 @@
+import json
 import os
 from sveta.descriptions_getters.description_getter import ServiceDescriptionGetter
 from sveta.llm_tests.gpt_caller import OpenAIChatCaller, MessageType, Message
-
+from copy import deepcopy
 
 def get_descriptions():
     dir_path = "../../json"
@@ -28,11 +29,30 @@ class ServiceAdviser:
         result = self.caller.get_response(sentence)
         return result
 
+def get_user_tasks(filename):
+    json_file_path = os.path.join(filename)
+    with open(json_file_path, 'r') as f:
+        data = json.load(f)
+    return data
+
 
 
 if __name__ == '__main__':
     descriptions = get_descriptions()
-    sentence = "I have mp3 audio file, which contains some speech in russian language. I would like to get translation of this speech. Do you have service which can help me this this issue?"
+    user_tasks = get_user_tasks("which_service_db.json")
     adviser = ServiceAdviser(descriptions)
-    result = adviser.get_services(sentence)
-    print(result)
+    history = deepcopy(adviser.caller.history)
+    for task in user_tasks:
+        result = adviser.get_services(task['question'])
+        task.update({'llm_answer': result})
+        # will not work for all examples, the prompt is to long,  so I clear history
+        adviser.caller.history = deepcopy(history)
+    json_data = json.dumps(user_tasks, indent=2)
+    with open("which_service_db_results.json", 'w') as f:
+        f.write(json_data)
+    print(user_tasks[:3])
+
+
+    #
+    #
+    #print(result)
