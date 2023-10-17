@@ -1,11 +1,14 @@
 import json
 import os
-from sveta.descriptions_getters.description_getter import ServiceDescriptionGetter
-from sveta.llm_tests.gpt_caller import OpenAIChatCaller, MessageType, Message
+
 from copy import deepcopy
 
+from prototyping.service_find.descriptions_getters.description_getter import ServiceDescriptionGetter
+from prototyping.service_find.llm_tests.gpt_caller import OpenAIChatCaller, Message, MessageType
+
+
 def get_descriptions():
-    dir_path = "../../json"
+    dir_path = "../../../json"
     descriptions  = []
     for file_path in os.listdir(dir_path):
         # check if current file_path is a file
