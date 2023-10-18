@@ -97,3 +97,43 @@ def get_md_files_in_all_directories(lo_url: str) -> dict[str, list[str]]:
             total[dirpath] = temp
 
     return total, l
+
+
+def get_text_chunks(text: str, chunk_token_size: int = CHUNK_SIZE) -> list[str]:
+    """Splits a text into chunks of ~CHUNK_SIZE tokens, based on punctuation and newline boundaries."""
+
+    tokens = ENCODING.encode(text)
+
+    chunks = []
+    chunk_size = chunk_token_size
+    num_chunks = 0
+
+    while tokens:
+        chunk = tokens[:chunk_size]
+
+        chunk_text = ENCODING.decode(chunk)
+
+        if not chunk_text or chunk_text.isspace():
+            tokens = tokens[len(chunk):]
+            continue
+
+        last_punctuation = max(chunk_text.rfind(
+            "."), chunk_text.rfind("\n"), chunk_text.rfind("\n\n"))
+
+        if last_punctuation != -1 and last_punctuation > MIN_CHUNK_SIZE_CHARS:
+            chunk_text = chunk_text[: last_punctuation + 1]
+
+        chunk_text_to_append = chunk_text.replace("\n", " ").strip()
+
+        if len(chunk_text_to_append) > MIN_CHUNK_LENGTH_TO_EMBED:
+            chunks.append(chunk_text_to_append)
+
+        tokens = tokens[len(ENCODING.encode(chunk_text)):]
+        num_chunks += 1
+
+    if tokens:
+        remaining_text = ENCODING.decode(tokens).replace("\n", " ").strip()
+        if len(remaining_text) > MIN_CHUNK_LENGTH_TO_EMBED:
+            chunks.append(remaining_text)
+
+    return chunks
