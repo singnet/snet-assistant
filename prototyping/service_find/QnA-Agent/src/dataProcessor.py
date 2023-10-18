@@ -41,11 +41,11 @@ def download_files(url: str, local_directory: str) -> None:
             f"Error: Unable to fetch repository. Status code {response.status_code}")
 
     # Create a directory to store the downloaded files.
-    os.makedirs(f"{local_directory}/new_data", exist_ok=True)
+    os.makedirs(f"{local_directory}", exist_ok=True)
 
     # Extract the ZIP archive.
     with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
-        zip_ref.extractall(f"{local_directory}/new_data")
+        zip_ref.extractall(f"{local_directory}")
 
     print(f"Repository downloaded to {local_directory}")
 
