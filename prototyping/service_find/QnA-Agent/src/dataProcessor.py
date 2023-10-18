@@ -58,3 +58,22 @@ def get_all_links(data_url: str) -> list[str]:
     except Exception as e:
         print(e)
         return []
+
+
+def save_data(link: str) -> str:
+    """Saves the contents of the given markdown file to a string."""
+
+    pattern_to_remove = r'Page settings.*?\nMicro navigation\n.*?(?=\n\n|\Z)'
+
+    text = ""
+    with open(link, "r", encoding="utf-8") as input_file:
+        text = input_file.read()
+
+    html = markdown.markdown(text)
+    soup = BeautifulSoup(html, "html.parser")
+
+    text = soup.get_text()
+    clean_text = re.sub(pattern_to_remove, "\n", text,
+                        flags=re.DOTALL | re.IGNORECASE)
+
+    return clean_text
