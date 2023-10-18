@@ -77,3 +77,23 @@ def save_data(link: str) -> str:
                         flags=re.DOTALL | re.IGNORECASE)
 
     return clean_text
+
+
+def get_md_files_in_all_directories(lo_url: str) -> dict[str, list[str]]:
+    """Returns a dictionary of all the markdown files in the given directory and its subdirectories."""
+
+    total = {}
+    for dirpath, _, _ in os.walk(lo_url):
+        l = []
+        temp = []
+        if dirpath != lo_url:
+            l = get_all_links(dirpath)
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                results = executor.map(save_data, l)
+
+            for result in results:
+                temp.append(result)
+
+            total[dirpath] = temp
+
+    return total, l
