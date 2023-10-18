@@ -3,28 +3,16 @@ import os
 
 from copy import deepcopy
 
-from prototyping.service_find.descriptions_getters.description_getter import ServiceDescriptionGetter
+from prototyping.service_find.llm_tests.prompt_generator_helper import PromptGeneratorHelper
 from prototyping.service_find.llm_tests.gpt_caller import OpenAIChatCaller, Message, MessageType
 
-
-def get_descriptions():
-    dir_path = "../../../json"
-    descriptions  = []
-    for file_path in os.listdir(dir_path):
-        # check if current file_path is a file
-        json_file = os.path.join(dir_path, file_path)
-        if os.path.isfile(json_file):
-            description = ServiceDescriptionGetter.get_description(json_file)
-            if description is not None:
-                descriptions.append(f"{description.display_name}: {description.short_description}" )
-    return descriptions
 
 
 class ServiceAdviser:
     def __init__(self, descriptions):
         self.descriptions = descriptions
         self.caller = OpenAIChatCaller()
-        descriptions_str = "\n".join(descriptions)
+        descriptions_str = str(descriptions)
         self.caller.history.add_history(
             Message(MessageType.SYSTEM, f'There are next services in snet platform: {descriptions_str}'))
 
@@ -39,11 +27,18 @@ def get_user_tasks(filename):
     return data
 
 
-
 if __name__ == '__main__':
-    descriptions = get_descriptions()
+    '''
+     use services short descriptions as prompt to get service which solves user's task
+    '''
+
+    dir_path = "../../../json"
+    gen_helper = PromptGeneratorHelper(dir_path)
+    descriptions = gen_helper.get_short_descriptions()
     user_tasks = get_user_tasks("which_service_db.json")
     adviser = ServiceAdviser(descriptions)
+    # with open("descriptions_prompt.txt", "w") as f:
+    #     f.writelines(str(descriptions))
     history = deepcopy(adviser.caller.history)
     for task in user_tasks:
         result = adviser.get_services(task['question'])
@@ -54,8 +49,3 @@ if __name__ == '__main__':
     with open("which_service_db_results.json", 'w') as f:
         f.write(json_data)
     print(user_tasks[:3])
-
-
-    #
-    #
-    #print(result)

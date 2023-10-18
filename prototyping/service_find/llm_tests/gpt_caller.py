@@ -160,7 +160,7 @@ class OpenAIChatCaller:
 
 
     def __init__(self):
-        openai.api_key = os.environ["OPENAI_API_KEY"]
+        openai.api_key = os.environ["OPENAI_API_KEY"] # !!!!!!!!!!!!!!!!!!!!1
         self.log = logging.getLogger(__name__ + '.' + type(self).__name__)
 
 

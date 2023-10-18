@@ -11,7 +11,7 @@ import logging
 
 
 class ServiceDescription:
-    def __init__(self,  display_name, url, short_description="", description=""):
+    def __init__(self, display_name, url, short_description="", description=""):
         self.url = url
         self.short_description = short_description
         self.description = description
@@ -39,8 +39,10 @@ class ServiceDescriptionGetter:
                     description_ = None
                     if 'description' in description:
                         description_ = description['description']
-                    if (url is not None) and (description_ is not None) and (short_description is not None):
-                        return ServiceDescription(display_name, url, short_description, description_)
+                    if (url is not None) and ((description_ is not None) or (short_description is not None)):
+                        return ServiceDescription(display_name, url,
+                                                  short_description if short_description is not None else "",
+                                                  description_ if description_ is not None else "")
             return None
         except Exception as ex:
             cls.log.error(f"get_description: Exception occurred for json file {json_file_path}: {ex}")
@@ -48,15 +50,15 @@ class ServiceDescriptionGetter:
 
     @classmethod
     def get_readme_text(cls, url):
-        if "https://github.com" not in url:
-            return ""
+        git_host = "https://github.com"
+        if git_host not in url:
+            return None
         try:
+            raw_url_host = "https://raw.githubusercontent.com"
             if not url.lower().endswith(".md"):
                 readme_url = None
-                raw_url_host = "https://raw.githubusercontent.com"
-
                 html = urllib.request.urlopen(url).read().decode('utf8')
-                bsObj = BeautifulSoup(html,'html.parser')
+                bsObj = BeautifulSoup(html, 'html.parser')
                 links = bsObj.find_all('a')
                 for link in links:
                     if 'href' in link.attrs and link['href'].lower().endswith("readme.md"):
@@ -66,18 +68,20 @@ class ServiceDescriptionGetter:
                 #     readme_url = url.replace("tree", "blob") + "/README.md"
             else:
                 readme_url = url
-            content = ""
             if readme_url is not None:
                 content = ""
-                req = urllib.request.Request(readme_url)
+                req = urllib.request.Request(readme_url.replace(git_host, raw_url_host).replace("/blob/", "/"))
                 with urllib.request.urlopen(req) as response:
                     for line in response:
                         decoded_line = line.decode("utf-8")
                         content += decoded_line
+                return content
+            else:
+                return None
         except Exception as ex:
             cls.log.error(f"get_readme_text: Exception occurred for url {url}: {ex}")
-            return ""
-        return content
+            return None
+
 
 if __name__ == '__main__':
     dir_path = "../../../json"
@@ -89,13 +93,11 @@ if __name__ == '__main__':
             description = ServiceDescriptionGetter.get_description(json_file)
             if description is not None:
                 readme_content = ServiceDescriptionGetter.get_readme_text(description.url)
-                if readme_content != "":
-                    #print(json_file)
+                if readme_content is not None:
+                    # print(json_file)
                     count = count + 1
                 elif "https://github.com" in description.url:
                     print("no git readme:", description.url)
                 else:
                     print("no git:", description.url)
     print(count)
-
-
