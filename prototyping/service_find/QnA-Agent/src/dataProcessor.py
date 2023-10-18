@@ -48,3 +48,13 @@ def download_files(url: str, local_directory: str) -> None:
         zip_ref.extractall(f"{local_directory}/new_data")
 
     print(f"Repository downloaded to {local_directory}")
+
+
+def get_all_links(data_url: str) -> list[str]:
+    """Returns a list of all the markdown links in the given directory."""
+
+    try:
+        return glob(f"{data_url}/**/*.md", recursive=True)
+    except Exception as e:
+        print(e)
+        return []
