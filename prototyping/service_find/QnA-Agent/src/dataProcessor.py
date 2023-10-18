@@ -1,19 +1,19 @@
-import io
 import os
-import pandas as pd
+import io
 import re
-import requests
-import tiktoken
+import shutil
 import zipfile
+import requests
+import pandas as pd
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 from glob import glob
-from markdown import markdown
 from pathlib import Path
 import markdown
+import tiktoken
+
 
 ENCODING = tiktoken.encoding_for_model("gpt-3.5-turbo")
-
 CHUNK_SIZE = 200  # The target size of each text chunk in tokens
 MIN_CHUNK_SIZE_CHARS = 350  # The minimum size of each text chunk in characters
 MIN_CHUNK_LENGTH_TO_EMBED = 5  # Discard chunks shorter than this
@@ -21,158 +21,182 @@ MAX_NUM_CHUNKS = 300  # The maximum number of chunks to generate from a text
 ENDPAGE_NUM = 282  # the last page number
 
 
-def download_files(url: str, local_directory: str) -> None:
-    """Downloads the ZIP archive at the given URL to the local directory.
+class DataProcessor:
 
-    Args:
-        url: The URL of the ZIP archive.
-        local_directory: The directory to store the downloaded files.
-    """
+    def __init__(self, repo_url):
+        """Initialize DataProcessor.
 
-    # Make a request to download the ZIP archive.
-    response = requests.get(url)
+        Args:
+            repo_url (str): URL of the ZIP archive.
+        """
+        self.repo_url = repo_url
+        self.base_dir = os.path.dirname(
+            os.path.dirname(os.path.realpath(__file__)))
+        self.data_dir_path = os.path.join(self.base_dir, "data")
+        self.docs_path = os.path.join(
+            self.data_dir_path, "dev-portal-master/docs")
+        self.total = {}
+        self.download_files()
+        self.get_md_files_in_all_directories()
+        self.save_to_csv()
+        self.delete_dir()
 
-    # Check if the request was successful (status code 200).
-    if response.status_code != 200:
-        raise RuntimeError(
-            f"Error: Unable to fetch repository. Status code {response.status_code}")
+    def download_files(self) -> None:
+        """Downloads the ZIP archive at the given URL to the local directory."""
 
-    # Create a directory to store the downloaded files.
-    os.makedirs(f"{local_directory}", exist_ok=True)
+        # Make a request to download the ZIP archive.
+        response = requests.get(self.repo_url)
 
-    # Extract the ZIP archive.
-    with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
-        zip_ref.extractall(f"{local_directory}")
+        # Check if the request was successful (status code 200).
+        if response.status_code != 200:
+            raise RuntimeError(
+                f"Error: Unable to fetch repository. Status code {response.status_code}")
 
-    print(f"Repository downloaded to {local_directory}")
+        # Create a directory to store the downloaded files.
+        os.makedirs(self.data_dir_path, exist_ok=True)
 
+        # Extract the ZIP archive.
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
+            zip_ref.extractall(f"{self.data_dir_path}")
 
-def get_all_links(data_url: str) -> list[str]:
-    """Returns a list of all the markdown links in the given directory."""
+        print(f"Repository downloaded to {self.data_dir_path}")
 
-    try:
-        return glob(os.path.join(data_url, "**/*.md"), recursive=True)
-    except Exception as e:
-        print(e)
-        return []
+    @staticmethod
+    def get_all_links(data_url: str) -> list[str]:
+        """Returns a list of all the markdown links in the given directory.
 
+        Args:
+            data_url (str): Directory path containing markdown files.
 
-def save_data(link: str) -> str:
-    """Saves the contents of the given markdown file to a string."""
+        Returns:
+            list: List of markdown file paths.
+        """
 
-    pattern_to_remove = r'Page settings.*?\nMicro navigation\n.*?(?=\n\n|\Z)'
+        try:
+            return glob(f"{data_url}/**/*.md", recursive=True)
+        except Exception as e:
+            print(e)
+            return []
 
-    text = ""
-    with open(link, "r", encoding="utf-8") as input_file:
-        text = input_file.read()
+    @staticmethod
+    def save_data(link: str) -> str:
+        """Saves the contents of the given markdown file to a string.
 
-    html = markdown.markdown(text)
-    soup = BeautifulSoup(html, "html.parser")
+        Args:
+            link (str): Path to the markdown file.
 
-    text = soup.get_text()
-    clean_text = re.sub(pattern_to_remove, "\n", text,
-                        flags=re.DOTALL | re.IGNORECASE)
+        Returns:
+            str: Cleaned markdown content.
+        """
 
-    return clean_text
+        pattern_to_remove = r'Page settings.*?\nMicro navigation\n.*?(?=\n\n|\Z)'
 
+        text = ""
+        with open(link, "r", encoding="utf-8") as input_file:
+            text = input_file.read()
 
-def get_top_level_dirs(dir_path):
-    """Returns a list of the full paths of all the top-level directories in the specified directory.
+        html = markdown.markdown(text)
+        soup = BeautifulSoup(html, "html.parser")
 
-    Args:
-        dir_path: The directory to list the top-level directories in.
+        text = soup.get_text()
+        clean_text = re.sub(pattern_to_remove, "\n", text,
+                            flags=re.DOTALL | re.IGNORECASE)
 
-    Returns:
-        A list of the full paths of all the top-level directories in the specified directory.
-    """
+        return clean_text
 
-    dir_path = Path(dir_path).resolve()
-    top_level_dirs = [x for x in dir_path.iterdir() if x.is_dir()]
-    return list(top_level_dirs)
+    @staticmethod
+    def get_top_level_dirs(dir_path):
+        """Returns a list of the full paths of all the top-level directories in the specified directory.
 
+        Args:
+            dir_path (str): Directory path.
 
-def get_md_files_in_all_directories(lo_url: str) -> dict[str, list[str]]:
-    """Returns a dictionary of all the markdown files in the given directory and its subdirectories."""
+        Returns:
+            list: List of top-level directory paths.
+        """
+        dir_path = Path(dir_path)
+        top_level_dirs = [x for x in dir_path.iterdir() if x.is_dir()]
+        return list(top_level_dirs)
 
-    total = {}
-    total = {}
-    list_dirs = get_top_level_dirs(lo_url)
-    for dirpath in list_dirs:
-        l = []
-        temp = []
-        if dirpath != lo_url:
-            l = get_all_links(dirpath)
-            with ThreadPoolExecutor(max_workers=5) as executor:
-                results = executor.map(save_data, l)
+    def get_md_files_in_all_directories(self) -> dict[str, list[str]]:
+        """Returns a dictionary of all the markdown files in the given directory and its subdirectories."""
 
-            for result in results:
-                temp.append(result)
+        list_dirs = self.get_top_level_dirs(self.docs_path)
+        for dirpath in list_dirs:
+            l = []
+            temp = []
+            if dirpath != self.docs_path:
+                l = self.get_all_links(dirpath)
+                with ThreadPoolExecutor(max_workers=5) as executor:
+                    results = executor.map(self.save_data, l)
 
-            total[dirpath] = temp
+                for result in results:
+                    temp.append(result)
 
-    return total
+                self.total[dirpath] = temp
 
+    @staticmethod
+    def get_text_chunks(text: str, chunk_token_size: int = CHUNK_SIZE) -> list[str]:
+        """Splits a text into chunks of ~CHUNK_SIZE tokens, based on punctuation and newline boundaries.
 
-def get_text_chunks(text: str, chunk_token_size: int = CHUNK_SIZE) -> list[str]:
-    """Splits a text into chunks of ~CHUNK_SIZE tokens, based on punctuation and newline boundaries."""
+        Args:
+            text (str): Text content to split into chunks.
+            chunk_token_size (int, optional): The target size of each chunk in tokens. Defaults to CHUNK_SIZE.
 
-    tokens = ENCODING.encode(text)
+        Returns:
+            list: List of text chunks.
+        """
+        tokens = ENCODING.encode(text)
 
-    chunks = []
-    chunk_size = chunk_token_size
-    num_chunks = 0
+        chunks = []
+        chunk_size = chunk_token_size
+        num_chunks = 0
 
-    while tokens:
-        chunk = tokens[:chunk_size]
+        while tokens:
+            chunk = tokens[:chunk_size]
 
-        chunk_text = ENCODING.decode(chunk)
+            chunk_text = ENCODING.decode(chunk)
 
-        if not chunk_text or chunk_text.isspace():
-            tokens = tokens[len(chunk):]
-            continue
+            if not chunk_text or chunk_text.isspace():
+                tokens = tokens[len(chunk):]
+                continue
 
-        last_punctuation = max(chunk_text.rfind(
-            "."), chunk_text.rfind("\n"), chunk_text.rfind("\n\n"))
+            last_punctuation = max(chunk_text.rfind(
+                "."), chunk_text.rfind("\n"), chunk_text.rfind("\n\n"))
 
-        if last_punctuation != -1 and last_punctuation > MIN_CHUNK_SIZE_CHARS:
-            chunk_text = chunk_text[: last_punctuation + 1]
+            if last_punctuation != -1 and last_punctuation > MIN_CHUNK_SIZE_CHARS:
+                chunk_text = chunk_text[: last_punctuation + 1]
 
-        chunk_text_to_append = chunk_text.replace("\n", " ").strip()
+            chunk_text_to_append = chunk_text.replace("\n", " ").strip()
 
-        if len(chunk_text_to_append) > MIN_CHUNK_LENGTH_TO_EMBED:
-            chunks.append(chunk_text_to_append)
+            if len(chunk_text_to_append) > MIN_CHUNK_LENGTH_TO_EMBED:
+                chunks.append(chunk_text_to_append)
 
-        tokens = tokens[len(ENCODING.encode(chunk_text)):]
-        num_chunks += 1
+            tokens = tokens[len(ENCODING.encode(chunk_text)):]
+            num_chunks += 1
 
-    if tokens:
-        remaining_text = ENCODING.decode(tokens).replace("\n", " ").strip()
-        if len(remaining_text) > MIN_CHUNK_LENGTH_TO_EMBED:
-            chunks.append(remaining_text)
+        if tokens:
+            remaining_text = ENCODING.decode(tokens).replace("\n", " ").strip()
+            if len(remaining_text) > MIN_CHUNK_LENGTH_TO_EMBED:
+                chunks.append(remaining_text)
 
-    return chunks
+        return chunks
 
+    def save_to_csv(self):
+        """Saves the processed data to a CSV file."""
+        total_test = []
 
-local_directory = "./snet-assistant-test/prototyping/service_find/QnA-Agent/data"
-repo_url = "https://github.com/singnet/dev-portal/archive/refs/heads/master.zip"
+        for key, value in (self.total.items()):
+            temp1 = []
+            for i in value:
+                temp1.append(self.get_text_chunks(i))
+                paths = Path(key)
+                paths = "/".join(paths.parts[-2:])
+            total_test.append([paths, temp1])
+        df_temp = pd.DataFrame(total_test, columns=['path', 'chuck_text'])
+        df_temp.to_csv(os.path.join(
+            self.data_dir_path, "dataset.csv"), index=False)
 
-# download_files(repo_url, local_directory)
-
-
-lo_url = local_directory + "/dev-portal-master/docs"
-
-test = get_md_files_in_all_directories(lo_url)
-
-
-total_test = []
-
-for key, value in (test.items()):
-    temp1 = []
-    for i in value:
-        temp1.append(get_text_chunks(i))
-        paths = Path(key)
-        paths = "/".join(paths.parts[-2:])
-    total_test.append([paths, temp1])
-
-df_test = pd.DataFrame(total_test, columns=['path', 'chuck_text'])
-print(df_test.info())
+    def delete_dir(self):
+        """Deletes the 'dev-portal-master' directory."""
+        shutil.rmtree(os.path.join(self.data_dir_path, "dev-portal-master"))
