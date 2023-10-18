@@ -6,6 +6,10 @@ import openai
 from prototyping.service_find.descriptions_getters.description_getter import ServiceDescriptionGetter
 
 class PromptGeneratorHelper:
+    '''
+    load descriptions from json files for all services. also on creates dictionaries with short description,
+    full descriptions and documentation.
+    '''
     def __init__(self, json_dir):
         self.json_dir = json_dir
         self.__load_descriptions_structures()

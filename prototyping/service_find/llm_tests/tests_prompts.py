@@ -28,6 +28,10 @@ def get_user_tasks(filename):
 
 
 if __name__ == '__main__':
+    '''
+     use services short descriptions as prompt to get service which solves user's task
+    '''
+
     dir_path = "../../../json"
     gen_helper = PromptGeneratorHelper(dir_path)
     descriptions = gen_helper.get_short_descriptions()
@@ -45,4 +49,3 @@ if __name__ == '__main__':
     with open("which_service_db_results.json", 'w') as f:
         f.write(json_data)
     print(user_tasks[:3])
- 

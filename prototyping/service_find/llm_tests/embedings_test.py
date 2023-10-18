@@ -29,6 +29,12 @@ def search_closest_documentation(available_doc_embeddings, user_task, n=5):
 
 
 if __name__ == '__main__':
+
+    '''
+     gets embeddings of each service documentation and finds  5 services most closest by cosine_similarity to the user's task.
+     the idea of this was to use wider services description as prompt,  but use only relevant services
+    '''
+
     json_dir_path = "../../../json"
     gen_helper = PromptGeneratorHelper(json_dir_path)
     documentation = gen_helper.get_services_documentation()
