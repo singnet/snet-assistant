@@ -122,7 +122,8 @@
     "question": "I have a lot of images, I need to select only images that depict cars. Can any snet service help me to do this?",
     "services": [
       "Image Captioning",
-      "Detect Objects"
+      "Detect Objects",
+      "Image Segmentation"
     ]
   },
   {
