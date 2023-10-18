@@ -51,7 +51,6 @@ def get_all_links(data_url: str) -> list[str]:
     """Returns a list of all the markdown links in the given directory."""
 
     try:
-        print(glob(os.path.join(data_url, "**/*.md"), recursive=True))
         return glob(os.path.join(data_url, "**/*.md"), recursive=True)
     except Exception as e:
         print(e)
@@ -75,6 +74,21 @@ def save_data(link: str) -> str:
                         flags=re.DOTALL | re.IGNORECASE)
 
     return clean_text
+
+
+def get_top_level_dirs(dir_path):
+    """Returns a list of the full paths of all the top-level directories in the specified directory.
+
+    Args:
+        dir_path: The directory to list the top-level directories in.
+
+    Returns:
+        A list of the full paths of all the top-level directories in the specified directory.
+    """
+
+    dir_path = Path(dir_path).resolve()
+    top_level_dirs = [x for x in dir_path.iterdir() if x.is_dir()]
+    return list(top_level_dirs)
 
 
 def get_md_files_in_all_directories(lo_url: str) -> dict[str, list[str]]:
@@ -161,4 +175,4 @@ for key, value in (test.items()):
     total_test.append([paths, temp1])
 
 df_test = pd.DataFrame(total_test, columns=['path', 'chuck_text'])
-print(df_test.head())
+print(df_test.info())
