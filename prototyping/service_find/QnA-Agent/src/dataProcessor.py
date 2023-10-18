@@ -1,8 +1,5 @@
-import concurrent.futures
 import io
-import json
 import os
-import pathlib
 import pandas as pd
 import re
 import requests
@@ -54,7 +51,8 @@ def get_all_links(data_url: str) -> list[str]:
     """Returns a list of all the markdown links in the given directory."""
 
     try:
-        return glob(f"{data_url}/**/*.md", recursive=True)
+        print(glob(os.path.join(data_url, "**/*.md"), recursive=True))
+        return glob(os.path.join(data_url, "**/*.md"), recursive=True)
     except Exception as e:
         print(e)
         return []
@@ -83,7 +81,9 @@ def get_md_files_in_all_directories(lo_url: str) -> dict[str, list[str]]:
     """Returns a dictionary of all the markdown files in the given directory and its subdirectories."""
 
     total = {}
-    for dirpath, _, _ in os.walk(lo_url):
+    total = {}
+    list_dirs = get_top_level_dirs(lo_url)
+    for dirpath in list_dirs:
         l = []
         temp = []
         if dirpath != lo_url:
@@ -96,7 +96,7 @@ def get_md_files_in_all_directories(lo_url: str) -> dict[str, list[str]]:
 
             total[dirpath] = temp
 
-    return total, l
+    return total
 
 
 def get_text_chunks(text: str, chunk_token_size: int = CHUNK_SIZE) -> list[str]:
@@ -137,3 +137,28 @@ def get_text_chunks(text: str, chunk_token_size: int = CHUNK_SIZE) -> list[str]:
             chunks.append(remaining_text)
 
     return chunks
+
+
+local_directory = "./snet-assistant-test/prototyping/service_find/QnA-Agent/data"
+repo_url = "https://github.com/singnet/dev-portal/archive/refs/heads/master.zip"
+
+# download_files(repo_url, local_directory)
+
+
+lo_url = local_directory + "/dev-portal-master/docs"
+
+test = get_md_files_in_all_directories(lo_url)
+
+
+total_test = []
+
+for key, value in (test.items()):
+    temp1 = []
+    for i in value:
+        temp1.append(get_text_chunks(i))
+        paths = Path(key)
+        paths = "/".join(paths.parts[-2:])
+    total_test.append([paths, temp1])
+
+df_test = pd.DataFrame(total_test, columns=['path', 'chuck_text'])
+print(df_test.head())
