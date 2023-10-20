@@ -3,7 +3,8 @@ import os
 
 from copy import deepcopy
 
-from prototyping.service_find.llm_tests.prompt_generator_helper import PromptGeneratorHelper
+from prototyping.service_find.descriptions_getters.services_information_getter import JSONServicesInformationGetter, \
+    APIServicesInformationGetter
 from prototyping.service_find.llm_tests.gpt_caller import OpenAIChatCaller, Message, MessageType
 
 
@@ -33,8 +34,8 @@ if __name__ == '__main__':
     '''
 
     dir_path = "../../../json"
-    gen_helper = PromptGeneratorHelper(dir_path)
-    descriptions = gen_helper.get_short_descriptions()
+    gen_helper = JSONServicesInformationGetter(dir_path)
+    descriptions = gen_helper.short_descriptions
     user_tasks = get_user_tasks("which_service_db.json")
     adviser = ServiceAdviser(descriptions)
     # with open("descriptions_prompt.txt", "w") as f:
