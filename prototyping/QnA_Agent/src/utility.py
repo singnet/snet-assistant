@@ -4,7 +4,7 @@ import openai
 def get_completion(messages,
                    model,
                    temperature=0,
-                   max_tokens=500):
+                   max_tokens=410):
     """Generates a completion for the given messages and model.
 
     Args:
