@@ -1,4 +1,5 @@
 import openai
+import json
 
 
 def get_completion(messages,
@@ -28,3 +29,19 @@ def get_completion(messages,
         max_tokens=max_tokens,  # the maximum number of tokens the model can ouptut
     )
     return response.choices[0].message["content"]
+
+
+def read_json(path: str) -> dict:
+
+    try:
+        # Opening JSON file
+        with open(path) as f:
+
+            # returns JSON object as
+            # a dictionary
+            data = json.load(f)
+    except Exception as e:
+        print(f"error: {e}")
+        return {}
+    else:
+        return data
