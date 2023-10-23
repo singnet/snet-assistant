@@ -4,6 +4,7 @@ import os
 import urllib
 from abc import abstractmethod
 
+import pathlib
 import requests
 from bs4 import BeautifulSoup
 
@@ -126,6 +127,14 @@ class JSONServicesInformationGetter(ServicesInformationGetter):
         self.log = logging.getLogger(__name__ + '.' + type(self).__name__)
         self.json_dir = json_dir
         self.__services_descriptions = []
+
+    def download_json_data(self):
+        current_dir = pathlib.Path(__file__).parent.resolve()
+        if not os.path.exists(self.json_dir):
+            os.makedirs(self.json_dir)
+        self.log.info(f"__ download_json_data: start download")
+        os.system(f"sh {current_dir}/sh/load-json-data.sh {self.json_dir}")
+        self.log.info(f"__download_json_data: finish download")
 
     @property
     def services_descriptions(self):
