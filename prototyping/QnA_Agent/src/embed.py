@@ -5,9 +5,8 @@ from dotenv import load_dotenv, find_dotenv
 import time
 import numpy as np
 
-load_dotenv(find_dotenv())
-
 # Load your API key from an environment variable or secret management service
+load_dotenv(find_dotenv())
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
 
@@ -15,28 +14,50 @@ openai.api_key = OPENAI_API_KEY
 EMBEDDING_MODEL = "text-embedding-ada-002"
 
 
-def embed_context(context_list):
+def embed_context(context_list: list) -> np.Array:
+    """
+    Embed a list of contexts using OpenAI's embedding model.
+
+    Args:
+        context_list (list): List of contexts.
+
+    Returns:
+        np.array: Array of embeddings.
+    """
     embeddings = []
     for batch in context_list:
         flattened = [item for sublist in batch for item in sublist if sublist]
 
-        response = openai.Embedding.create(
-            model=EMBEDDING_MODEL,
-            input=flattened
-        )
+        try:
+            response = openai.Embedding.create(
+                model=EMBEDDING_MODEL,
+                input=flattened
+            )
+            batch_embeddings = [data["embedding"] for data in response["data"]]
+            embeddings.append(batch_embeddings)
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
-        batch_embeddings = [data["embedding"] for data in response["data"]]
-        embeddings.append(batch_embeddings)
-
-        time.sleep(10)
+        time.sleep(10)  # Add comment explaining the sleep time
 
     return np.array(embeddings)
 
 
-def embed_question(question):
-    response = openai.Embedding.create(
-        model=EMBEDDING_MODEL,
-        input=question
-    )
+def embed_question(question: str) -> np.Array:
+    """
+    Embed a question using OpenAI's embedding model.
 
-    return np.array(response.data[0].embedding)
+    Args:
+        question (str): The question.
+
+    Returns:
+        np.array: Embedding of the question.
+    """
+    try:
+        response = openai.Embedding.create(
+            model=EMBEDDING_MODEL,
+            input=question
+        )
+        return np.array(response.data[0].embedding)
+    except Exception as e:
+        print(f"An error occurred: {e}")
