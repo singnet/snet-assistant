@@ -1,33 +1,39 @@
+import os
+import numpy as np
+import pandas as pd
 from dotenv import load_dotenv, find_dotenv
 from utility import read_json, get_completion
 from embed import embed_question
-from openai.embeddings_utils import distances_from_embeddings
-import pandas as pd
 import openai
-import os
-import numpy as np
-import ast
+from openai.embeddings_utils import distances_from_embeddings
 
-_ = load_dotenv(find_dotenv())  # read local .env file
 
+# Load environment variables
+load_dotenv(find_dotenv())
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-summary_path = (
-    "/home/lewi/Documents/project/snet-assistant-test/prototyping/QnA_Agent/data/summary.json")
-dataset_path = ("prototyping/QnA_Agent/data/dataset_with_summary.csv")
-embed_path = (
-    "/home/lewi/Documents/project/snet-assistant-test/prototyping/QnA_Agent/data/embed.npy")
+# Constants and Configurations
+SUMMARY_PATH = "./prototyping/QnA_Agent/data/summary.json"
+DATASET_PATH = "./prototyping/QnA_Agent/data/dataset_with_summary.csv"
+EMBED_PATH = "./prototyping/QnA_Agent/data/embed.npy"
 
 
-def retrieveAnswerDirectory(question: str, path: str = summary_path) -> int:
+def retrieve_answer_directory(question: str, path: str = SUMMARY_PATH) -> int:
+    """
+    Retrieve the relevant answer directory for a given question.
 
-    summary_json = (read_json(path))
+    Args:
+        question (str): The question.
+        path (str): Path to the summary file.
 
+    Returns:
+        int: The relevant directory ID.
+    """
+    summary_json = read_json(path)
     prompt = f"""Given the JSON data and question, identify the paragraph that provides the answer. Please ensure that you only provide the paragraph's ID.\n\nQuestion{question}\n\nJson:{summary_json}"""
 
     messages = [{'role': 'system', 'content': """You excel at following instructions and providing the correct answers."""},
-                {'role': 'user', 'content': f"{prompt}"},
-                ]
+                {'role': 'user', 'content': f"{prompt}"}]
 
     result = get_completion(messages=messages, model="gpt-3.5-turbo")
     if int(result) not in range(10):
@@ -36,40 +42,54 @@ def retrieveAnswerDirectory(question: str, path: str = summary_path) -> int:
         return int(result)
 
 
-def get_context(dataset, id: int, question: str):
-    context = eval(dataset['chuck_text'][id])
+def get_context(dataset, context_id: int, question: str):
+    """
+    Get context information for a given question.
+
+    Args:
+        dataset (pd.DataFrame): The dataset.
+        context_id (int): The ID of the relevant context.
+        question (str): The question.
+
+    Returns:
+        str: The context information.
+    """
+    context = eval(dataset['chuck_text'][context_id])
     flat_context = [item for sublist in context for item in sublist]
 
     result = pd.DataFrame({'text': flat_context})
-    context_embed = np.load(
-        '/home/lewi/Documents/project/snet-assistant-test/prototyping/QnA_Agent/data/embed.npy', allow_pickle=True)[id]
+    context_embed = np.load(EMBED_PATH, allow_pickle=True)[context_id]
     question_embed = embed_question(question)
-    # Get the distances from the embeddings
 
-    result['distances'] = (distances_from_embeddings(
-        question_embed, context_embed, distance_metric='cosine'))
+    result['distances'] = distances_from_embeddings(
+        question_embed, context_embed, distance_metric='cosine')
 
     temp = []
 
     for text in (result.sort_values('distances', ascending=True)[:5])["text"]:
         temp.append(text)
 
-    # # Return the context
-    # return "\n\n###\n\n".join(temp)
-    return (" ".join(temp))
+    return " ".join(temp)
 
 
-def respondToContext(question: str):
+def respond_to_context(question: str):
+    """
+    Respond to a given question with relevant context information.
 
-    df = pd.read_csv(dataset_path)
-    get_relevant_id = retrieveAnswerDirectory(question) - 1
-    if get_relevant_id == -1:
-        return (("error there is not relevant folder to answer the given questions"))
+    Args:
+        question (str): The question.
+
+    Returns:
+        str: The response.
+    """
+    df = pd.read_csv(DATASET_PATH)
+    relevant_id = retrieve_answer_directory(question) - 1
+
+    if relevant_id == -1:
+        return "Error: No relevant folder found to answer the given question."
 
     context = get_context(
-        dataset=df, id=get_relevant_id, question=question)
-
-    print(context)
+        dataset=df, context_id=relevant_id, question=question)
 
     prompt_2 = f"""Context information is below.\n
     ---------------------\n
@@ -81,8 +101,7 @@ def respondToContext(question: str):
     Answer: """
 
     messages = [{'role': 'system', 'content': """You excel at following instructions and providing the correct answers."""},
-                {'role': 'user', 'content': f"{prompt_2}"},
-                ]
+                {'role': 'user', 'content': f"{prompt_2}"}]
 
     response = get_completion(messages=messages, model="gpt-3.5-turbo")
 
@@ -91,4 +110,4 @@ def respondToContext(question: str):
 
 question = """how To get the metamask plugin install?"""
 # id = (retrieveAnswerDirectory(question))
-print(respondToContext(question))
+print(respond_to_context(question))
