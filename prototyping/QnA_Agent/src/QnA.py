@@ -108,6 +108,6 @@ def respond_to_context(question: str):
     return response
 
 
-question = """how To get the metamask plugin install?"""
-# id = (retrieveAnswerDirectory(question))
-print(respond_to_context(question))
+# question = """how To get the metamask plugin install?"""
+
+# print(respond_to_context(question))

@@ -14,7 +14,7 @@ openai.api_key = OPENAI_API_KEY
 EMBEDDING_MODEL = "text-embedding-ada-002"
 
 
-def embed_context(context_list: list) -> np.Array:
+def embed_context(context_list: list):
     """
     Embed a list of contexts using OpenAI's embedding model.
 
@@ -43,7 +43,7 @@ def embed_context(context_list: list) -> np.Array:
     return np.array(embeddings)
 
 
-def embed_question(question: str) -> np.Array:
+def embed_question(question: str):
     """
     Embed a question using OpenAI's embedding model.
 
