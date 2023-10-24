@@ -139,7 +139,13 @@ class JSONServicesInformationGetter(ServicesInformationGetter):
     @property
     def services_descriptions(self):
         if len(self.__services_descriptions) == 0:
-            for file_path in os.listdir(self.json_dir):
+            files = []
+            if os.path.exists(self.json_dir):
+                files = os.listdir(self.json_dir)
+            if len(files) == 0:
+                self.download_json_data()
+                files = os.listdir(self.json_dir)
+            for file_path in files:
                 # check if current file_path is a file
                 json_file = os.path.join(self.json_dir, file_path)
                 if os.path.isfile(json_file):
