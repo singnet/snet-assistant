@@ -6,7 +6,6 @@ import sys
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 lib_path = os.path.join(os.path.dirname((current_script_dir)), 'src')
 sys.path.append(lib_path)
-print(sys.path)
 
 
 try:
