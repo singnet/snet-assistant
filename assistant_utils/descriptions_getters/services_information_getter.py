@@ -17,6 +17,16 @@ class ServiceDescription:
         self.display_name = display_name
 
 
+class ServicesInformationGetterCreator:
+    @staticmethod
+    def create(getter_type, json_dir=None):
+        ''' json_dir  maybe should be in config'''
+        if getter_type == "json":
+            return JSONServicesInformationGetter(json_dir)
+        if getter_type == "api":
+            return APIServicesInformationGetter()
+        return None
+
 class ServicesInformationGetter:
     ''' Abstract class defines interface to get information about services '''
 
@@ -25,6 +35,7 @@ class ServicesInformationGetter:
         self.__short_descriptions = {}
         self.__full_descriptions = {}
         self.__services_documentation = {}
+        self.__display_names = []
 
     @property
     @abstractmethod
@@ -82,6 +93,13 @@ class ServicesInformationGetter:
             for description in self.services_descriptions:
                 self.__short_descriptions[description.display_name] = description.short_description
         return self.__short_descriptions
+
+    @property
+    def display_names(self):
+        if len(self.__display_names) == 0:
+            for description in self.services_descriptions:
+                self.__display_names.append(description.display_name)
+        return self.__display_names
 
     @property
     def full_descriptions(self):

@@ -2,26 +2,23 @@
   {
     "question": "I have a wav audio file, which contains some speech in Russian language. I would like to get a translation of this speech. Do you have a service which can help me with this issue?",
     "services": [
-      "Russian Speech Recognition",
-      "Machine Translation",
-      "Multilingual Speech Translation"
+      "Russian Speech Recognition |  Multilingual Speech Recognition",
+      "Machine Translation | Multilingual Speech Translation"
     ]
   },
   {
     "question": "I have a wav audio file, which contains some speech in Russian language. I would like to get a summary of this speech. So, I need to convert speech into text and translate text to English, after that I will get a short description of what this text is about.",
     "services": [
-      "Russian Speech Recognition",
-      "Machine Translation",
-      "Multilingual Speech Translation",
-      "Abstractive Summarization"
+      "Russian Speech Recognition |  Multilingual Speech Recognition",
+      "Machine Translation | Multilingual Speech Translation",
+      "Abstractive Summarization | Text Summaries"
     ]
   },
   {
     "question": "I have two audio wav files. They both contain some speech in Russian language. I would like to compare these speeches semantically.",
     "services": [
-      "Russian Speech Recognition",
-      "Machine Translation",
-      "Multilingual Speech Translation",
+      "Russian Speech Recognition |  Multilingual Speech Recognition",
+      "Machine Translation | Multilingual Speech Translation",
       "Semantic Similarity Binary"
     ]
   },
@@ -34,9 +31,8 @@
   {
     "question": "I have a wav audio file, which contains some speech in the Russian language. I would like to recognize the emotions of the speaker in this file.",
     "services": [
-      "Russian Speech Recognition",
-      "Machine Translation",
-      "Multilingual Speech Translation",
+      "Russian Speech Recognition |  Multilingual Speech Recognition",
+      "Machine Translation | Multilingual Speech Translation",
       "Text Emotion Recognition"
     ]
   },
@@ -55,11 +51,9 @@
   {
     "question": "I have a wav audio file, which contains some questions in Russian language. Are there some snet services which can help me to answer those questions?",
     "services": [
-      "Russian Speech Recognition",
-      "Machine Translation",
-      "Multilingual Speech Translation",
-      "AbstractiveQuestion Answering",
-      "iAnswer"
+      "Russian Speech Recognition |  Multilingual Speech Recognition",
+      "Machine Translation | Multilingual Speech Translation",
+      "AbstractiveQuestion Answering | iAnswer"
     ]
   },
   {
@@ -75,16 +69,16 @@
     ]
   },
   {
-    "question": "I have some text in Russian, I would like to translate it into Korean and transfer this text to speech.  Are there some snet services which do this task?\"",
+    "question": "I have some text in Russian, I would like to translate it into Korean and transfer this text to speech.  Are there some snet services which do this task?",
     "services": [
-      "Machine Translation",
+      "Machine Translation | Multilingual Speech Translation",
       "Korean Speech Synthesis"
     ]
   },
   {
     "question": "My friend likes to play minecraft, I think it would be nice to convert one of his photos into minecraft style. Is there any service which can do it?",
     "services": [
-      "Minecrafizing service"
+      "Minecraftizing service"
     ]
   },
   {
@@ -114,16 +108,14 @@
   {
     "question": "I have some text in Spanish. I would like to know if this text contains some negative or hateful meaning. Can any snet service solve my problem?",
     "services": [
-      "Machine Translation",
+      "Machine Translation | Multilingual Speech Translation",
       "Hate Speech Detection"
     ]
   },
   {
     "question": "I have a lot of images, I need to select only images that depict cars. Can any snet service help me to do this?",
     "services": [
-      "Image Captioning",
-      "Detect Objects",
-      "Image Segmentation"
+      "Image Captioning | Detect Objects | Image Segmentation"
     ]
   },
   {
@@ -142,21 +134,21 @@
     "question": "I have some images with printed English text, I need to translate them into Russian. Are there snet services which can do such tasks?",
     "services": [
       "Printed Text Recognition",
-      "Machine Translation"
+      "Machine Translation | Multilingual Speech Translation"
     ]
   },
   {
     "question": "I have some images with handwritten English text, I need to translate them into Russian. Are there snet services which can do such tasks?",
     "services": [
       "Handwritten Text Recognition",
-      "Machine Translation"
+      "Machine Translation | Multilingual Speech Translation"
     ]
   },
   {
     "question": "I have some text in Korean. I need to get a short description (summary) of what this text is about.",
     "services": [
-      "Machine Translation",
-      "Abstractive Summarization"
+      "Machine Translation | Multilingual Speech Translation",
+      "Abstractive Summarization | Text Summaries"
     ]
   },
   {
@@ -168,15 +160,13 @@
   {
     "question": "There are several high quality wav files, I need to get only vocals from these files. Can snet services do my task?",
     "services": [
-      "Neural Music Remixing",
-      "Deezer Spleeter"
+      "Neural Music Remixing | Deezer Spleeter"
     ]
   },
   {
     "question": "I would like to get all persons' names from my text. Suggest me a service for solving my task.",
     "services": [
-      "Named Entity Recognition",
-      "Entity Disambiguation"
+      "Named Entity Recognition | Entity Disambiguation"
     ]
   },
   {
@@ -200,15 +190,12 @@
   {
     "question": "We have 1000 images, I would like to know if any of these images contains a picture of my friend? What is the name of the service that performs such actions?",
     "services": [
-      "Detect Faces",
-      "Face Recognition"
+      "Detect Faces | Face Recognition"
     ]
   },
    {
     "question": "I have text in Kabardian language. Can you suggest service fo translation this text into English?",
     "services": [
-      "Detect Faces",
-      "Face Recognition"
     ]
   }
 ]
