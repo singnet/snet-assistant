@@ -1,6 +1,7 @@
 import json
 import os
 
+
 from  assistant_utils import JSONServicesInformationGetter
 #import llm_gate
 import hyperon as hp
@@ -41,12 +42,13 @@ if __name__ == '__main__':
     '''
     with open("prototyping/service_find/metta_llm/assist_operations.metta", "r") as f:
         script = f.read()
-    metta = hp.MeTTa()
-    metta.run(script)
+    env_builder = hp.Environment.custom_env(include_paths=["/media/sveta/hdisk4/singnet/hyperon-experimental/python/sandbox/neurospace"])
+    metta = hp.MeTTa(env_builder=env_builder)
+    print(metta.run(script))
     user_tasks = get_user_tasks("prototyping/service_find/llm_tests/which_service_db.json")
     correct_answers = 0
     for task in user_tasks:
-        result = metta.run(f"!(respond init  () \"{task['question']}. Your reply should be very short and have a format [a, b,...], where 'a', 'b' are relevant services\")", True)
+        result = metta.run(f"!(respond init  () \"{task['question']}\")", True)
         print('---------------------------------')
         #print(result)
         task.update({'llm_answer': repr(result[0])})
@@ -61,4 +63,4 @@ if __name__ == '__main__':
     #     f.write(json_data)
 
 
-
+# . Your reply should be very short and have a format [a, b,...], where 'a', 'b' are relevant services
