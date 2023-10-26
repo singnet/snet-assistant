@@ -2,7 +2,7 @@ import json
 import os
 
 import openai
-from prototyping.service_find.descriptions_getters.services_information_getter import APIServicesInformationGetter
+from assistant_utils import APIServicesInformationGetter
 from prototyping.service_find.llm_tests.tests_prompts import get_user_tasks
 from openai.embeddings_utils import cosine_similarity
 
