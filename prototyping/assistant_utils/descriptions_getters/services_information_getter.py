@@ -4,6 +4,7 @@ import os
 import urllib
 from abc import abstractmethod
 
+import pathlib
 import requests
 from bs4 import BeautifulSoup
 
@@ -16,6 +17,16 @@ class ServiceDescription:
         self.display_name = display_name
 
 
+class ServicesInformationGetterCreator:
+    @staticmethod
+    def create(getter_type, json_dir=None):
+        ''' json_dir  maybe should be in config'''
+        if getter_type == "json":
+            return JSONServicesInformationGetter(json_dir)
+        if getter_type == "api":
+            return APIServicesInformationGetter()
+        return None
+
 class ServicesInformationGetter:
     ''' Abstract class defines interface to get information about services '''
 
@@ -24,6 +35,7 @@ class ServicesInformationGetter:
         self.__short_descriptions = {}
         self.__full_descriptions = {}
         self.__services_documentation = {}
+        self.__display_names = []
 
     @property
     @abstractmethod
@@ -83,6 +95,13 @@ class ServicesInformationGetter:
         return self.__short_descriptions
 
     @property
+    def display_names(self):
+        if len(self.__display_names) == 0:
+            for description in self.services_descriptions:
+                self.__display_names.append(description.display_name)
+        return self.__display_names
+
+    @property
     def full_descriptions(self):
         if len(self.__full_descriptions) == 0:
             for description in self.services_descriptions:
@@ -127,10 +146,24 @@ class JSONServicesInformationGetter(ServicesInformationGetter):
         self.json_dir = json_dir
         self.__services_descriptions = []
 
+    def download_json_data(self):
+        current_dir = pathlib.Path(__file__).parent.resolve()
+        if not os.path.exists(self.json_dir):
+            os.makedirs(self.json_dir)
+        self.log.info(f"__ download_json_data: start download")
+        os.system(f"sh {current_dir}/sh/load-json-data.sh {self.json_dir}")
+        self.log.info(f"__download_json_data: finish download")
+
     @property
     def services_descriptions(self):
         if len(self.__services_descriptions) == 0:
-            for file_path in os.listdir(self.json_dir):
+            files = []
+            if os.path.exists(self.json_dir):
+                files = os.listdir(self.json_dir)
+            if len(files) == 0:
+                self.download_json_data()
+                files = os.listdir(self.json_dir)
+            for file_path in files:
                 # check if current file_path is a file
                 json_file = os.path.join(self.json_dir, file_path)
                 if os.path.isfile(json_file):
