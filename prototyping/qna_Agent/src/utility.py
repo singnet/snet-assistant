@@ -31,6 +31,37 @@ def get_completion(messages,
     return response.choices[0].message["content"]
 
 
+def function_call(messages, model):
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=messages,
+        functions=[
+            {
+                "name": "get_index",
+                "description": "Get the paragraph index",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "index": {
+                            "type": "integer",
+                            "description": "the index of the paragraph in the json ",
+                        },
+                    },
+                    "required": ["index"],
+                },
+            }
+        ],
+        function_call="auto",
+    )
+
+    reply_content = response.choices[0].message
+
+    funcs = reply_content.to_dict()['function_call']['arguments']
+    funcs = json.loads(funcs)
+
+    return funcs['index']
+
+
 def read_json(path: str) -> dict:
 
     try:
