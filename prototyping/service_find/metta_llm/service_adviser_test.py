@@ -1,8 +1,6 @@
 import json
 import os
 
-
-from  assistant_utils import JSONServicesInformationGetter
 #import llm_gate
 import hyperon as hp
 
@@ -56,6 +54,7 @@ if __name__ == '__main__':
             correct_answers += 1
         else:
             print(task)
+        break
     print(correct_answers/len(user_tasks))
 
     # json_data = json.dumps(user_tasks, indent=2)

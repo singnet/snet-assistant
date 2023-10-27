@@ -3,7 +3,7 @@ import os
 
 from copy import deepcopy
 
-from assistant_utils import JSONServicesInformationGetter
+from prototyping.assistant_utils import JSONServicesInformationGetter
 from prototyping.service_find.llm_tests.gpt_caller import OpenAIChatCaller, Message, MessageType
 
 

@@ -3,7 +3,7 @@ import pathlib
 
 from hyperon.ext import register_atoms
 from hyperon import *
-from  assistant_utils import ServicesInformationGetterCreator
+from prototyping.assistant_utils import ServicesInformationGetterCreator
 
 class GetterHelper:
     def __init__(self, json_dir):
