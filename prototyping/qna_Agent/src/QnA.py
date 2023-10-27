@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv, find_dotenv
-from utility import read_json, get_completion
+from utility import read_json, get_completion, function_call
 from embed import embed_question
 import openai
 from openai.embeddings_utils import distances_from_embeddings
@@ -14,7 +14,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Constants and Configurations
 SUMMARY_PATH = "./prototyping/qna_Agent/data/summary.json"
-DATASET_PATH = "./prototyping/qna_Agent/data/dataset_with_summary.csv"
+DATASET_PATH = "./prototyping/qna_Agent/data/dataset.csv"
 EMBED_PATH = "./prototyping/qna_Agent/data/embed.npy"
 
 
@@ -30,16 +30,18 @@ def retrieve_answer_directory(question: str, path: str = SUMMARY_PATH) -> int:
         int: The relevant directory ID.
     """
     summary_json = read_json(path)
-    prompt = f"""Given the JSON data and question, identify the paragraph that provides the answer. Please ensure that you only provide the paragraph's ID.\n\nQuestion{question}\n\nJson:{summary_json}"""
+    prompt = f"""Given the provided JSON data and a question, your task is to identify the paragraph that contains the answer. When providing your answer, include only the ID of the paragraph. Do not include any additional information, only the number corresponding to the paragraph.\n\nQuestion{question}\n\nJson:{summary_json}\n\nparagraph ID: """
 
     messages = [{'role': 'system', 'content': """You excel at following instructions and providing the correct answers."""},
                 {'role': 'user', 'content': f"{prompt}"}]
 
-    result = get_completion(messages=messages, model="gpt-3.5-turbo")
+    # result = get_completion(messages=messages, model="gpt-3.5-turbo")
+
+    result = function_call(messages=messages, model="gpt-3.5-turbo")
     if int(result) not in range(10):
         return -1
     else:
-        return int(result)
+        return int(result-1)
 
 
 def get_context(dataset, context_id: int, question: str):
