@@ -93,7 +93,7 @@ def embed_context(context_list: list):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-        time.sleep(10)  # Add comment explaining the sleep time
+        time.sleep(10)  # Due to the rate limit imposed by the OpenAI API.
 
     embed = np.array(embeddings, dtype=object)
     return embed
