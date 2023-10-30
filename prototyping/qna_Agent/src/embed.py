@@ -99,7 +99,7 @@ def embed_context(context_list: list):
     return embed
 
 
-def save_embeddings(data_dir_path):
+def save_embeddings(data_dir_path=data_dir_path):
     """
     Save embeddings to a file.
 
