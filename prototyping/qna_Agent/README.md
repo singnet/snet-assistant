@@ -10,7 +10,7 @@ In order to keep your API key secure and separate from your code, we'll use a .e
 
 ## Step 2: Add your OpenAI API key
 
-Open the .env file in a text editor and add the following line:
+create the .env file in a text editor and add the following line:
 
 plaintext
 
