@@ -2,8 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv, find_dotenv
-from utility import read_json, get_completion, function_call
-from embed import embed_question
+from src.utility import read_json, get_completion, function_call
+from src.embed import embed_question
 import openai
 from openai.embeddings_utils import distances_from_embeddings
 
@@ -96,7 +96,6 @@ def respond_to_context(question: str):
     """
     df = pd.read_csv(DATASET_PATH)
     relevant_id = retrieve_answer_directory(question) - 1
-    print(relevant_id)
 
     if relevant_id == -1:
         return "Error: No relevant folder found to answer the given question."
@@ -119,7 +118,3 @@ def respond_to_context(question: str):
     response = get_completion(messages=messages, model="gpt-3.5-turbo")
 
     return response
-
-question = """how To get the metamask plugin install?"""
-
-print(respond_to_context(question))
