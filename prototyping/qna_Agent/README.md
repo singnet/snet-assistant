@@ -39,4 +39,7 @@ To perform these operations, use the following command:
 
 ### If there is dataset:
 run example_usage_QnA.py. 
+<<<<<<< HEAD
     
+=======
+>>>>>>> 30817ba1ebcaa1308260dd294cb50bfe04592274
