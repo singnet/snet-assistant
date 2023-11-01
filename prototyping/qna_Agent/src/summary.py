@@ -29,8 +29,18 @@ def join_text(texts):
 
 def summary(total_text, model="gpt-3.5-turbo"):
     """Generate a summary for the given text."""
-    prompt = f"""
-    Please provide a concise summary of the given text that contains enough information to determine whether a question can be answered by referring to the text or not.\n\ntext:{total_text}\n\nsummary:"""
+    # prompt = f"""
+    # Please provide a concise summary of the given text that contains enough information to determine whether a question can be answered by referring to the text or not.\n\ntext:{total_text}\n\nsummary:"""
+
+    prompt = f"""Write a summary of the following. Try to use only the 
+    information provided. 
+    Try to include as many key details as possible.\n
+    \n
+    \n
+    {total_text}\n
+    \n
+    \n
+    SUMMARY:\n"""
 
     messages = [{'role': 'system', 'content': """You excel at extracting information from the given text and summary ."""},
                 {'role': 'user', 'content': f"{prompt}"},
@@ -58,10 +68,8 @@ def save_summary():
 
     summary_sample = """The text provides an overview of the SingularityNET platform for decentralized AI services. It describes the key components like organizations, services, registry, channels, SDK, CLI, etc. It explains how services are defined using protocol buffers and metadata. It discusses how the daemon and multi-party escrow enable transactions. It describes concepts like on-chain/off-chain transactions, gas costs, wallets, DApp, and the AGIX token. It outlines how to create an organization, add members, publish services, make payments, etc. Overall, the text gives a high-level technical introduction to SingularityNET for publishers and consumers of AI services
 """
-
     summary_list = [summary(text, model='gpt-3.5-turbo-16k') if len(ENCODING.encode(text)) < 16400 else summary_sample
                     for text in clean_test]
-
     summary_dict = summary_dict = [{"id": index+1, "text": text}
                                    for index, text in enumerate(summary_list)]
     with open(os.path.join(data_dir_path, "summary.json"), 'w') as file:
