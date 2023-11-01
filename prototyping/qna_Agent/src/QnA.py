@@ -30,7 +30,17 @@ def retrieve_answer_directory(question: str, path: str = SUMMARY_PATH) -> int:
         int: The relevant directory ID.
     """
     summary_json = read_json(path)
-    prompt = f"""Given the provided JSON data and a question, your task is to identify the paragraph that contains the answer. When providing your answer, include only the ID of the paragraph. Do not include any additional information, only the number corresponding to the paragraph.\n\nQuestion{question}\n\nJson:{summary_json}\n\nparagraph ID: """
+    # prompt = f"""Given the provided JSON data and a question, your task is to identify the paragraph that contains the answer. When providing your answer, include only the ID of the paragraph. Do not include any additional information, only the number corresponding to the paragraph.\n\nQuestion{question}\n\nJson:{summary_json}\n\nparagraph ID: """
+    prompt = f"""Some choices are given below. It is provided in a numbered list 
+    (1 to 9), 
+    where each item in the list corresponds to a summary.\n
+    ---------------------\n
+    {summary_json}
+    \n---------------------\n
+    Using only the choices above and not prior knowledge, return 
+    the choice that is most relevant to the question: '{question}'\n
+    Provide choice in the following format: 'ANSWER: <number>' and explain why 
+    this summary was selected in relation to the question.\n"""
 
     messages = [{'role': 'system', 'content': """You excel at following instructions and providing the correct answers."""},
                 {'role': 'user', 'content': f"{prompt}"}]
@@ -86,6 +96,7 @@ def respond_to_context(question: str):
     """
     df = pd.read_csv(DATASET_PATH)
     relevant_id = retrieve_answer_directory(question) - 1
+    print(relevant_id)
 
     if relevant_id == -1:
         return "Error: No relevant folder found to answer the given question."
@@ -93,7 +104,7 @@ def respond_to_context(question: str):
     context = get_context(
         dataset=df, context_id=relevant_id, question=question)
 
-    prompt_2 = f"""Context information is below.\n
+    prompt = f"""Context information is below.\n
     ---------------------\n
     {context}\n
     ---------------------\n
@@ -103,8 +114,12 @@ def respond_to_context(question: str):
     Answer: """
 
     messages = [{'role': 'system', 'content': """You excel at following instructions and providing the correct answers."""},
-                {'role': 'user', 'content': f"{prompt_2}"}]
+                {'role': 'user', 'content': f"{prompt}"}]
 
     response = get_completion(messages=messages, model="gpt-3.5-turbo")
 
     return response
+
+question = """how To get the metamask plugin install?"""
+
+print(respond_to_context(question))
