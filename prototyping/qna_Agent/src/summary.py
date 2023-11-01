@@ -1,5 +1,5 @@
 import ast
-from utility import get_completion
+from src.utility import get_completion
 import os
 import pandas as pd
 import tiktoken
