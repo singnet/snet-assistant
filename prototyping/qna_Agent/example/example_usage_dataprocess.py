@@ -4,12 +4,12 @@
 import os
 import sys
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
-lib_path = os.path.join(os.path.dirname((current_script_dir)), 'src')
+lib_path = os.path.dirname((current_script_dir))
 sys.path.append(lib_path)
 
 
 try:
-    import dataProcessor
+    from src import dataProcessor
 except ImportError as e:
     print(f"Error importing dataProcessor: {e}")
 else:
