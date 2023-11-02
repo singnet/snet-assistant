@@ -16,6 +16,7 @@ if __name__ == '__main__':
      use services short descriptions as prompt to get service which solves user's task
     '''
     #"prototyping/service_find/metta_guidance/service_finder_guidance.metta"
+    # "prototyping/service_find/metta_guidance/question_types_guidance.metta"
     with open("prototyping/service_find/metta_guidance/question_types_guidance.metta", "r") as f:
         script = f.read()
     env_builder = hp.Environment.custom_env(include_paths=["/media/sveta/hdisk4/singnet/hyperon-experimental/python/sandbox/neurospace"])

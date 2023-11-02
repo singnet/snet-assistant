@@ -9,9 +9,6 @@
    (let $messages (collapse (get-atoms &service-finder-template))
         (cons-atom Messages $messages)))
 
-(= (function init)
-   get_question_type)
-
 !(change-state! (user-question) ("I have wav audio file, which contains some speech in Russian language. I would like to recognize emotions of the speaker in this file . Suggest some services for tis task."))
 (= (user-query)
    (get-state (user-question)))
