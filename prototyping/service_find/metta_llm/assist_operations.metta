@@ -1,5 +1,5 @@
 !(extend-py!  llm_gate)
-!(extend-py! prototyping.service_find.metta_llm.data_getter_extension)
+!(extend-py! prototyping.assistant_utils.descriptions_getters.data_getter_extension)
 
 (= (append-expr $xs $x)
    (collapse (superpose ((superpose $xs) $x))))
@@ -10,7 +10,7 @@
    (system "You are the SingularityNet AI platform and marketplace assistant"))
 
 (= (message service-list)
-   (system (get_service_descriptions ("There are next services in snet platform") )))
+   (system ("There are next services in snet platform:" (get_service_descriptions) )))
 
 (= (message reply-relevant)
    (system "Reply something relevant to user"))
@@ -38,7 +38,7 @@
  )
 
 (= (doc find_service_names)
- (let $services (get_service_names())
+ (let $services (get_service_names)
    (Doc
      (description "You should call this function if user asks to suggest a services")
      (parameters
@@ -65,7 +65,6 @@
      (compose-prompt $state $history (user $user-msg))
      (compose-functions $state)
     ))
-
 
 ;!(compose-prompt init () (user "What services do you have on the platform?"))
 ;!(compose-functions init)
