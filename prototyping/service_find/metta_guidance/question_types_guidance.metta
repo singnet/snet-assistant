@@ -1,4 +1,5 @@
-!(extend-py!  llm_gate)
+;!(extend-py! prototyping.assistant_utils.llm_gate_temp)
+!(extend-py! llm_gate)
 !(extend-py! prototyping.assistant_utils.descriptions_getters.data_getter_extension)
 !(import! &service-finder-template prototyping/service_find/metta_guidance/templates/service_finder_template.metta)
 !(import! &question-type-template prototyping/service_find/metta_guidance/templates/question_type_selector_template.metta)
@@ -34,7 +35,10 @@
 (= (user-query)
    (get-state (user-question)))
 
+(= (add_question_context)
+   ( get_question_context (get-state (user-question)) )
 
+)
 
 (= (answer_question $type)
     (if (== $type "Services")
@@ -54,5 +58,5 @@
 
 
 
-!(respond question "I have wav audio file, which contains some speech in Russian language. I would like to recognize emotions of the speaker in this file . Suggest some services for tis task.")
-!(respond question "How to create snet account?")
+;!(respond question "I have wav audio file, which contains some speech in Russian language. I would like to recognize emotions of the speaker in this file . Suggest some services for tis task.")
+!(respond question "How to create AI Marketplace account?")

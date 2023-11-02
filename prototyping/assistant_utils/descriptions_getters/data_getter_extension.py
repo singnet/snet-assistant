@@ -2,10 +2,12 @@ import pathlib
 from hyperon.ext import register_atoms
 from hyperon import *
 from prototyping.assistant_utils import ServicesInformationGetterCreator
+from prototyping.assistant_utils import PlatformInformationGetter
 
 class GetterHelper:
     def __init__(self, json_dir):
         self.getter = ServicesInformationGetterCreator.create("json", json_dir)
+        self.platform_info_getter = PlatformInformationGetter()
 
 
     def get_service_descriptions(self):
@@ -33,6 +35,11 @@ class GetterHelper:
         prefix = repr(prefix).replace ('"', "") if not isinstance(prefix, str) else prefix
         return [S(prefix + " " + str(documentation))]
 
+    def get_question_context(self, question):
+        question = repr(question) if not isinstance(question, str) else question
+        context = self.platform_info_getter.get_question_context(question)
+        return [S(context)]
+
 @register_atoms
 def data_getters_atoms():
     parent_dir = pathlib.Path(__file__).parent.resolve().parent.parent.parent
@@ -55,6 +62,10 @@ def data_getters_atoms():
 
         'get_service_documentation':
             G(OperationObject('get_service_documentation', lambda service, prefix: getter_helper.get_service_documentation(service, prefix),
+                              unwrap=False)),
+
+        'get_question_context':
+            G(OperationObject('get_question_context', lambda question: getter_helper.get_question_context(question),
                               unwrap=False)),
         }
 

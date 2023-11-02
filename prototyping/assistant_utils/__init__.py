@@ -1,3 +1,3 @@
 from .descriptions_getters.services_information_getter import APIServicesInformationGetter, JSONServicesInformationGetter, ServicesInformationGetterCreator
-
+from  .descriptions_getters.platform_information_getter import PlatformInformationGetter
 

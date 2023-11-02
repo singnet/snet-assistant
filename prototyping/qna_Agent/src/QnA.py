@@ -2,8 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv, find_dotenv
-from src.utility import read_json, get_completion, function_call
-from src.embed import embed_question
+from prototyping.qna_Agent.src.utility import read_json, get_completion, function_call
+from prototyping.qna_Agent.src.embed import embed_question
 import openai
 from openai.embeddings_utils import distances_from_embeddings
 
