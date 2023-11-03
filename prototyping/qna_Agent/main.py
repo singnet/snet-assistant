@@ -1,5 +1,5 @@
 import argparse
-from src import dataProcessor, embed, QnA, summary
+from prototyping.qna_Agent.src import dataProcessor, embed, QnA, summary
 
 def process_data(args):
     if args.dataset:

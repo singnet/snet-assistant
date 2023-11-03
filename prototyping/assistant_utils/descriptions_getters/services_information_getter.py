@@ -108,17 +108,20 @@ class ServicesInformationGetter:
                 self.__full_descriptions[description.display_name] = description.description
         return self.__full_descriptions
 
+    def _get_service_documentation_inner(self, description):
+        readme_content = self.__get_documentation_from_url(description.url)
+        if readme_content is not None:
+            return readme_content
+        elif len(description.description) >= len(description.short_description):
+            return description.description
+        else:
+           return description.short_description
+
     @property
     def services_documentation(self):
         if len(self.__services_documentation) == 0:
             for description in self.services_descriptions:
-                readme_content = self.__get_documentation_from_url(description.url)
-                if readme_content is not None:
-                    self.__services_documentation[description.display_name] = readme_content
-                elif len(description.description) >= len(description.short_description):
-                    self.__services_documentation[description.display_name] = description.description
-                else:
-                    self.__services_documentation[description.display_name] = description.short_description
+                self.__services_documentation[description.display_name] = self._get_service_documentation_inner(description)
         return self.__services_documentation
 
     def get_service_full_descriptions(self, service_name):
@@ -132,7 +135,13 @@ class ServicesInformationGetter:
         return None
 
     def get_service_documentation(self, service_name):
-        if service_name in self.services_documentation:
+        if not isinstance(service_name, str):
+            service_name = repr(service_name).replace('"', "")
+        if len(self.__services_documentation) == 0:
+            for description in self.services_descriptions:
+                if service_name.strip().lower() == description.display_name.strip().lower():
+                    return self._get_service_documentation_inner(description)
+        elif service_name in self.services_documentation:
             return self.services_documentation[service_name]
         return None
 

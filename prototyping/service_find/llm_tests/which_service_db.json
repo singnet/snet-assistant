@@ -15,7 +15,7 @@
     ]
   },
   {
-    "question": "I have two audio wav files. They both contain some speech in Russian language. I would like to compare these speeches semantically.",
+    "question": "I have two audio wav files. They both contain some speech in Russian language. I would like to compare these speeches semantically.Suggest me a service please.",
     "services": [
       "Russian Speech Recognition |  Multilingual Speech Recognition",
       "Machine Translation | Multilingual Speech Translation",
