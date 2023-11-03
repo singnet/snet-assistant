@@ -57,6 +57,5 @@
     ))
 
 
-
 ;!(respond question "I have wav audio file, which contains some speech in Russian language. I would like to recognize emotions of the speaker in this file . Suggest some services for tis task.")
-!(respond question "How to create AI Marketplace account?")
+;!(respond question "How to create AI Marketplace account?")

@@ -1,0 +1,57 @@
+[
+  {
+    "question": "What is MetaMask and how do I install it?"
+  },
+  {
+    "question": "How do I create an identity on MetaMask and what is the purpose of the seed phrase?"
+  },
+  {
+    "question": "What are the different Ethereum networks and how do I switch between them in MetaMask?"
+  },
+  {
+    "question": "What is the purpose of the Ropsten network and how can I access it for testing?"
+  },
+  {
+    "question": "What are the system requirements to set up the SingularityNET platform?"
+    
+  },
+  {
+    "question": "What is the AGIX token used for in SingularityNet?"
+  },
+  {
+    "question": "How can users obtain Kovan or Ropsten Testnet AGIX tokens?"
+  },
+  {
+    "question": "What is the difference between Testnet and Mainnet tokens?"
+  },
+  {
+    "question": "What is the purpose of the SingularityNet faucet?"
+  },
+  {
+    "question": "What are the three important software and tools for integrating with SingularityNet?"
+  },
+  {
+    "question": "How does SingularityNet enable the publishing and use of AI services?"
+  },
+  {
+    "question": "Why did SingularityNet choose to minimize dependence on Ethereum Blockchain?"
+  },
+  {
+    "question": "How does SingularityNet abstract away the network for AI services integration?"
+    
+  },
+  {
+    "question": "What are the core components of the SingularityNet platform and network?"
+  
+  },
+  {
+    "question": "What is the purpose of the SingularityNET Dapp?"
+  },
+  {
+    "question": "What is SingularityNet storybook and how can it be used?"
+  },
+  {
+    "question": "How can service developers register their custom UIs?"
+  }
+  
+]
