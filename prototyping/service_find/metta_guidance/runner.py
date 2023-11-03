@@ -43,6 +43,4 @@ if __name__ == '__main__':
 
 
 
-    print( user_tasks)
-
 # . Your reply should be very short and have a format [a, b,...], where 'a', 'b' are relevant services
