@@ -1,0 +1,7 @@
+beautifulsoup4
+markdown
+tiktoken
+matplotlib
+plotly==5.18.0
+scipy
+sklearn
