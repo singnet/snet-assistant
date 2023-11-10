@@ -11,39 +11,29 @@ def get_user_tasks(filename):
         data = json.load(f)
     return data
 
-def detect_question_type():
-    user_tasks = get_user_tasks("prototyping/service_find/llm_tests/which_service_db.json")
-    platform_questions = get_user_tasks("prototyping/service_find/metta_guidance/platform_question.json")
+
+def detect_question_type( type_name, filename):
+    #user_tasks = get_user_tasks("prototyping/service_find/llm_tests/which_service_db.json")
+    user_tasks = get_user_tasks(filename)
     correct_answers = 0
-    for task in user_tasks:
+    for task in user_tasks[:3]:
         result = metta.run(f"!(question-type \"{task['question']}\")", True)
         print(result)
-        if 'services' in repr(result[1]).lower():
+        if type_name in repr(result[1]).lower():
             correct_answers += 1
-    print("service", correct_answers/len(user_tasks))
-    correct_answers = 0
-    for task in platform_questions:
-        result = metta.run(f"!(question-type \"{task['question']}\")", True)
-        print(result)
-        if 'snet' in repr(result[1]).lower():
-            correct_answers += 1
-    print("platform", correct_answers / len(platform_questions))
-    detect_specific_service_question()
+    print(type_name, correct_answers/len(user_tasks))
 
 
-def detect_specific_service_question():
-    service_questions = get_user_tasks("prototyping/service_find/metta_guidance/service_question.json")
-    correct_answers = 0
-    for task in service_questions :
-        result = metta.run(f"!(question-type \"{task['question']}\")", True)
-        print(result)
-        if 'specificservice' in repr(result[1]).lower():
-            correct_answers += 1
-    print("specific service", correct_answers / len(service_questions))
+def detect_all_question_types():
+    types = {}
+    types['services'] = "prototyping/service_find/llm_tests/which_service_db.json"
+    types['snet'] = "prototyping/service_find/metta_guidance/platform_question.json"
+    types['specificservice'] = "prototyping/service_find/metta_guidance/service_question.json"
+    for k, v in types.items():
+        detect_question_type(k, v)
 
 def answer_specific_service_question():
     service_questions = get_user_tasks("prototyping/service_find/metta_guidance/service_question.json")
-    correct_answers = 0
     count = 0
     for task in service_questions:
         result = metta.run(f"!(respond \"{task['question']}\")", True)
@@ -65,8 +55,8 @@ if __name__ == '__main__':
         include_paths=["/media/sveta/hdisk4/singnet/hyperon-experimental/python/sandbox/neurospace"])
     metta = hp.MeTTa(env_builder=env_builder)
     print(metta.run(script))
-    #detect_specific_service_question()
-    answer_specific_service_question()
+    detect_all_question_types()
+    #answer_specific_service_question()
 
 
 

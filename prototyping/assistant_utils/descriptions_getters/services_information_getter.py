@@ -17,26 +17,6 @@ class ServiceDescription:
         self.display_name = display_name
         self.contributors = contributors
 
-
-class ServiceGroupData:
-    def __init__(self, json_data):
-        self.free_calls = json_data['free_calls'] if 'free_calls' in json_data else None
-        self.free_call_signer_address = json_data[
-            'free_call_signer_address'] if 'free_call_signer_address' in json_data else None
-        self.daemon_addresses = json_data['free_call_signer_address'] if 'free_call_signer_address' in json_data else []
-        self.pricing = []
-        if ('pricing' in json_data) and len(json_data['pricing']) > 0:
-            for price in json_data['pricing']:
-                self.pricing.append(price)
-        self.endpoints = json_data['endpoints'] if 'endpoints' in json_data else []
-        self.group_id = json_data['group_id'] if 'group_id' in json_data else None
-        self.group_name = json_data['group_name'] if 'group_name' in json_data else None
-
-
-    def __str__(self):
-        return json.dumps(self.__dict__)
-
-
 class ServicesInformationGetterCreator:
     @staticmethod
     def create(getter_type, json_dir=None):
@@ -178,6 +158,13 @@ class ServicesInformationGetter:
             return self.services_group_data[service_name]
         return None
 
+    def load_groups_data(self, data):
+        group_data = []
+        for group in data:
+            group_data.append(group)
+        return  group_data
+
+
 
 class JSONServicesInformationGetter(ServicesInformationGetter):
     ''' Loads information about services from json files '''
@@ -219,8 +206,8 @@ class JSONServicesInformationGetter(ServicesInformationGetter):
                             # also load group data for current service
                             if description.display_name is None:
                                 return
-                            self.services_group_data[description.display_name] =  \
-                                ServiceGroupData(data['groups'][0]) if ('groups' in data) and (len(data['groups']) > 0) else None
+                            if ('groups' in data) and (len(data['groups']) > 0):
+                                self.services_group_data[description.display_name] = self.load_groups_data(data['groups'])
                 except Exception as ex:
                     self.log.error(f"__load_description_from_json: Exception occurred for json file {json_file}: {ex}")
                     return None
@@ -278,4 +265,4 @@ class APIServicesInformationGetter(ServicesInformationGetter):
                 self.services_descriptions.append(description_structure)
                 if info['display_name'] is not None:
                     groups = self.__request_groups_data(info)
-                    self.services_group_data[info['display_name']] = ServiceGroupData(groups)
+                    self.services_group_data[info['display_name']] = self.load_groups_data(groups)
