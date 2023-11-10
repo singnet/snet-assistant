@@ -6,9 +6,9 @@ Developers are able to charge for the use of their services using the native AGI
 There are next services in snet platform:"
 (get_service_names)
 "User can ask you a questions. There are next types of questions:
-{ 'SpecificService': 'the user asks about a specific service, indicating its name in his question.
-for example, user can ask what service is doing, how service is working, how to access the service.'},
-{ 'Services': 'user asks you about what services to use, or asks you to suggest a service for his task'},
+{ 'SpecificService': 'The user wants to know some information about specific service, providing the name of the service in the question.
+Note, the name of the service should exactly match to some service from the list above.'},
+{ 'Services': 'user asks you about what services to use, or asks you to suggest a service for his task or asks you what services are on the snet platform, this type of questions is requesting to advice a service.'},
 { 'SNET Platform': 'user asks a common questions about SingularityNet platform, about account creation for SingularityNet platform, about technical features of SingularityNet.'},
 { 'Random': 'user asks questions not related to services and SingularityNet platform'},
 detect the type of user's question.  Output only the name of question type."
