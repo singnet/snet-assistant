@@ -51,7 +51,7 @@
  ))
  )
 
-(= (respond $state $user-msg)
+(= (respond $user-msg)
     (superpose
     (
         (change-state! (user-question) ( $user-msg))
@@ -64,6 +64,6 @@
 ;!(question-type "I have wav audio file, which contains some speech in Russian language. I would like to recognize emotions of the speaker in this file . Suggest some services for tis task")
 ;!(question-type "What is the price of Speech Emotion Recognition")
 ;!(question-type "How to create AI Marketplace account?")
-;!(respond question "I have wav audio file, which contains some speech in Russian language. I would like to recognize emotions of the speaker in this file . Suggest some services for tis task.")
-;!(respond question "How to create AI Marketplace account?")
-!(respond question  "What is the price of Speech Emotion Recognition")
+;!(respond "I have wav audio file, which contains some speech in Russian language. I would like to recognize emotions of the speaker in this file . Suggest some services for tis task.")
+;!(respond "How to create AI Marketplace account?")
+!(respond   "What is the price of Speech Emotion Recognition")
