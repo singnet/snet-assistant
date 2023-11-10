@@ -18,10 +18,25 @@ class GetterHelper:
         names = self.getter.display_names
         return [S(str(names))]
 
+    def get_service_prompt(self, text):
+        services = []
+        text = repr(text).lower() if not isinstance(text, str) else text.lower()
+        for name in self.getter.display_names:
+            if name.lower() in text:
+                services.append(name)
+        promt = ""
+        for service in services:
+            promt += str(self.getter.get_service_full_descriptions(service)) + " "
+            promt += str(self.getter.get_service_group_data(service)) + " "
+            doc = self.getter.get_service_documentation(service)
+            if doc is not None:
+                promt += doc
+        return [S(str(promt))]
+
     def concat_strings(self, str1, str2):
         str1 = repr(str1).replace("\"", "")
         str2 = repr(str2).replace("\"", "")
-        return  [S(f'"{str1} {str2}"')]
+        return [S(f'"{str1} {str2}"')]
 
     def is_snet_service(self, service_name):
         name =  repr(service_name) if not isinstance(service_name, str) else service_name
@@ -32,13 +47,15 @@ class GetterHelper:
 
     def get_service_documentation(self, service_name, prefix):
         documentation = self.getter.get_service_documentation(service_name)
-        prefix = repr(prefix).replace ('"', "") if not isinstance(prefix, str) else prefix
+        prefix = repr(prefix).replace('"', "") if not isinstance(prefix, str) else prefix
         return [S(prefix + " " + str(documentation))]
 
     def get_question_context(self, question):
         question = repr(question) if not isinstance(question, str) else question
         context = self.platform_info_getter.get_question_context(question)
         return [S(context)]
+
+
 
 @register_atoms
 def data_getters_atoms():
@@ -67,7 +84,9 @@ def data_getters_atoms():
         'get_question_context':
             G(OperationObject('get_question_context', lambda question: getter_helper.get_question_context(question),
                               unwrap=False)),
-        }
-
+        'get_service_prompt':
+            G(OperationObject('get_service_prompt', lambda question: getter_helper.get_service_prompt(question),
+                              unwrap=False)),
+}
 
 

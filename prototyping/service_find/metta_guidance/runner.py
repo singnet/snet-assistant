@@ -24,22 +24,24 @@ if __name__ == '__main__':
         include_paths=["/media/sveta/hdisk4/singnet/hyperon-experimental/python/sandbox/neurospace"])
     metta = hp.MeTTa(env_builder=env_builder)
     print(metta.run(script))
-    user_tasks = get_user_tasks("prototyping/service_find/llm_tests/which_service_db.json")
-    platform_questions = get_user_tasks("prototyping/service_find/metta_guidance/platform_question.json")
-    correct_answers = 0
-    for task in user_tasks:
-        metta.run(f"!(change-state! (user-question) (\"{task['question']}\"))", True)
-        result = metta.run("!(llm (question-type-messages))", True)
-        if 'services' in repr(result[0]).lower():
-            correct_answers += 1
-    print("service", correct_answers/len(user_tasks))
-    correct_answers = 0
-    for task in platform_questions:
-        metta.run(f"!(change-state! (user-question) (\"{task['question']}\"))", True)
-        result = metta.run("!(llm (question-type-messages))", True)
-        if 'snet' in repr(result[0]).lower():
-            correct_answers += 1
-    print("platform", correct_answers / len(platform_questions))
+    # user_tasks = get_user_tasks("prototyping/service_find/llm_tests/which_service_db.json")
+    # platform_questions = get_user_tasks("prototyping/service_find/metta_guidance/platform_question.json")
+    # correct_answers = 0
+    # for task in user_tasks[:3]:
+    #     metta.run(f"!(change-state! (user-question) (\"{task['question']}\"))", True)
+    #     result = metta.run("!(llm (question-type-messages))", True)
+    #     print(result)
+    #     if 'services' in repr(result[0]).lower():
+    #         correct_answers += 1
+    # print("service", correct_answers/len(user_tasks))
+    # correct_answers = 0
+    # for task in platform_questions[:3]:
+    #     metta.run(f"!(change-state! (user-question) (\"{task['question']}\"))", True)
+    #     result = metta.run("!(llm (question-type-messages))", True)
+    #     print(result)
+    #     if 'snet' in repr(result[0]).lower():
+    #         correct_answers += 1
+    # print("platform", correct_answers / len(platform_questions))
 
 
 
