@@ -67,6 +67,7 @@ def embed_question(question: str):
         return np.array(response.data[0].embedding)
     except Exception as e:
         print(f"An error occurred: {e}")
+        return None
 
 
 def embed_context(context_list: list):

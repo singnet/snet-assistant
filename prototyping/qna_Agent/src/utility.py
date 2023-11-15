@@ -21,13 +21,17 @@ def get_completion(messages,
     Returns:
       A string containing the generated completion.
     """
-
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages,
-        temperature=temperature,  # this is the degree of randomness of the model's output
-        max_tokens=max_tokens,  # the maximum number of tokens the model can ouptut
-    )
+    response = None
+    while response is None:
+        try:
+            response = openai.ChatCompletion.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,  # this is the degree of randomness of the model's output
+                max_tokens=max_tokens,  # the maximum number of tokens the model can ouptut
+            )
+        except openai.error.RateLimitError as e:
+            return None
     return response.choices[0].message["content"]
 
 
@@ -52,6 +56,8 @@ def function_call(messages, model):
             }
         ],
         function_call="auto",
+        temperature=0
+
     )
 
     reply_content = response.choices[0].message

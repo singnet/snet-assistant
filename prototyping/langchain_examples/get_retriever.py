@@ -13,7 +13,8 @@ def download_md_files(data_dir):
     if not os.path.exists(data_dir):
         raise Exception("{data_dir} does not exists")
     d = os.path.join(data_dir, "original_docs")
-    os.mkdir(d)
+    if not os.path.exists(d):
+        os.mkdir(d)
     os.system(f"cd {d}; git clone https://github.com/singnet/dev-portal.git")
     g1 = glob.glob(os.path.join(d, "dev-portal", "docs","*md"))
     g2 = glob.glob(os.path.join(d, "dev-portal", "docs", "*", "*md"))
@@ -38,5 +39,5 @@ def get_retriever(data_dir):
         vs = Chroma(persist_directory=db, embedding_function=OpenAIEmbeddings())
     else:
         splits = load_split_docs(data_dir)
-        vs = Chroma.from_documents(documents=splits,embedding=OpenAIEmbeddings(),persist_directory=db )
-    return vs.as_retriever(search_kwargs = {'k':4})
+        vs = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings(), persist_directory=db)
+    return vs.as_retriever(search_kwargs = {'k':7})
