@@ -16,7 +16,7 @@
   },
   {
     "question": "What is the purpose of the Ropsten network and how can I access it for testing?",
-    "llm_answer": "The purpose of the Ropsten network is to allow developers to test their decentralized applications (DApps) before launching them on the Ethereum main network. It simulates the environment of the main network but uses Ropsten Ethereum, which is free to claim and can be used to cover the gas costs associated with transactions on the platform. To access the Ropsten network for testing, users are required to visit a Ropsten Faucet, which is a per-request Ropsten Ethereum distribution hub. They provide their Ropsten Ethereum wallet address from MetaMask to the faucet, and it issues a set amount of Ropsten Ethereum to their wallet.",
+    "llm_answer": "The purpose of the Ropsten network is to allow developers to test their decentralized applications (DApps) before launching them on the Ethereum main network. It simulates the environment of the main network but with tokens that have no real value. To access the Ropsten network for testing, you can change the Ethereum network on the top of the MetaMask extension. Additionally, to obtain Ropsten Ethereum for covering gas costs, you need to visit a Ropsten Faucet and provide your Ropsten Ethereum wallet address from MetaMask. The faucet will issue a set amount of Ropsten Ethereum to your wallet.",
     "llm_answer_langchain": "The purpose of the Ropsten network is to provide a testing environment for developers to test their software before launching it on the Ethereum main network. To access the Ropsten network for testing, users can visit a Ropsten Faucet, which is a per-request Ropsten Ethereum distribution hub. Users provide their Ropsten Ethereum wallet address from MetaMask to the faucet, and it issues a set amount of Ropsten Ethereum to the requesting wallet."
   },
   {
@@ -46,7 +46,7 @@
   },
   {
     "question": "What are the three important software and tools for integrating with SingularityNet?",
-    "llm_answer": "The three important software and tools for integrating with SingularityNet are snet-cli, the SDK, and snetd (SingularityNET daemon).",
+    "llm_answer": "The three important software and tools for integrating with SingularityNet are snet-cli, the SDK, and snetd.",
     "llm_answer_langchain": "The three important software and tools for integrating with SingularityNet are the daemon, CLI, and SDK."
   },
   {
@@ -66,7 +66,7 @@
   },
   {
     "question": "What are the core components of the SingularityNet platform and network?",
-    "llm_answer": "The core components of the SingularityNet platform and network are the daemon, CLI, SDK, multi-party escrow contract, atomic unidirectional channels for payments, and the SingularityNet platform itself.",
+    "llm_answer": "The core components of the SingularityNet platform and network are as follows:\n\n1. SingularityNET Network: An open and decentralized network of AI services accessible through the Blockchain.\n\n2. SingularityNET Marketplace: A marketplace where developers can publish their AI services and users can access them using an internet connection.\n\n3. AGIX Token: The native cryptocurrency used for transactions on the SingularityNet platform.\n\n4. Smart Contract Templates: Templates that AI agents can use to request AI work, exchange data, and supply the results of AI work.\n\n5. SingularityNET Dapp: A decentralized application that provides a user interface for consumers to interact with the services offered on the marketplace.\n\n6. SingularityNet Storybook: A UI component explorer for service developers to customize their user interfaces and match the overall style of the SingularityNET Marketplace.",
     "llm_answer_langchain": "The core components of the SingularityNET platform and network are not explicitly mentioned in the given context."
   },
   {
@@ -76,12 +76,12 @@
   },
   {
     "question": "What is SingularityNet storybook and how can it be used?",
-    "llm_answer": "SingularityNet storybook is a UI component explorer for service developers. It allows service developers to explore and test UI components for their custom user interfaces (UIs) that interact with the SingularityNET marketplace. Developers can use SingularityNet storybook to match the overall style and aesthetic of the marketplace and ensure a seamless user experience.",
+    "llm_answer": "SingularityNet storybook is a UI component explorer for service developers. It allows developers to explore and test UI components for their AI services. They can use SingularityNet storybook to match the overall style and aesthetic of the SingularityNET Marketplace.",
     "llm_answer_langchain": "SingularityNet storybook is a UI component explorer for service developers. It lists all common components used in the marketplace and can be reused for custom services. It can be used to build components locally by downloading the snet-dapp code, installing the necessary dependencies, and updating the .env file with the appropriate endpoint, org_id, and service_id. The storybook allows developers to match the overall style and aesthetic of the SingularityNET Marketplace for their custom UIs."
   },
   {
     "question": "How can service developers register their custom UIs?",
-    "llm_answer": "Service developers can register their custom UIs by adding an entry for the new service in the `src/assets/thirdPartyServices/index.js` file. They need to use the following line of code, replacing `orgId`, `serviceId`, and `CustomUIComponent` with the appropriate values:\n\n`thirdPartyCustomUIComponents.addCustomUIComponent(orgId, serviceId, CustomUIComponent);`",
+    "llm_answer": "Service developers can register their custom UIs by adding an entry for the new service in the `src/assets/thirdPartyServices/index.js` file. They need to use the following line of code towards the end of the file, replacing `orgId`, `serviceId`, and `CustomUIComponent` with the appropriate values:\n\n`thirdPartyCustomUIComponents.addCustomUIComponent(orgId, serviceId, CustomUIComponent);`",
     "llm_answer_langchain": "Service developers can register their custom UIs by adding an entry for the new service in src/assets/thirdPartyServices/index.js if it does not already exist. They need to add the following line towards the end of the file, replacing orgId, serviceId, and CustomUIComponent accordingly:\n\nthirdPartyCustomUIComponents.addCustomUIComponent(orgId, serviceId, CustomUIComponent);"
   },
   {
@@ -96,22 +96,22 @@
   },
   {
     "question": "What are the approaches for interacting with services?",
-    "llm_answer": "The approaches for interacting with services are as follows:\n\n1. Using snet-cli: This involves invoking the service using the command line tool.\n\n2. Using the Market Place Dapp: This involves invoking the service using the SingularityNET Market Place Dapp.\n\n3. Using the Python SDK: This involves invoking an AI service using the Python SDK.\n\n4. Using Metamask: Metamask is a plugin used by the SingularityNET platform. It is used to select a wallet and make payments for service calls.\n\nThese approaches provide different ways to interact with services on the SingularityNET platform.",
+    "llm_answer": "There are several approaches for interacting with services on the SingularityNET platform:\n\n1. Using snet-cli: This approach involves invoking the service using the command line tool.\n\n2. Using the Market Place Dapp: The Market Place Dapp allows users to invoke the service through a user-friendly interface.\n\n3. Using the Python SDK: The Python SDK provides a way to invoke AI services using Python code.\n\nThese approaches provide different ways to interact with services on the SingularityNET platform, catering to different user preferences and technical requirements.",
     "llm_answer_langchain": "The context does not provide information about the approaches for interacting with services."
   },
   {
     "question": "What is Multi-party Escrow (MPE)?",
-    "llm_answer": "Multi-party Escrow (MPE) is a smart contract API that, together with the payment channel, enables payments in the SingularityNet platform with minimal on-Blockchain interactions between AI Consumers and AI service providers. It allows for conditional transactions between two transacting parties through an Escrow account. MPE consists of a wallet with deposit and withdraw functions, as well as a set of simple unidirectional payment channels between clients and service providers. These payment channels enable off-chain transactions without the delay imposed by Blockchain block formation, while maintaining transactional security.",
+    "llm_answer": "Multi-party Escrow (MPE) is a smart contract API that, together with the payment channel, enables payments in the SingularityNet platform with minimal on-Blockchain interactions between AI Consumers and AI service providers. It allows for conditional transactions between two transacting parties through an Escrow account. MPE consists of a wallet with deposit and withdraw functions, as well as a set of simple unidirectional payment channels between clients and service providers, along with support functions for controlling these channels. It allows for off-chain transactions between parties without the delay imposed by Blockchain block formation, while maintaining transactional security.",
     "llm_answer_langchain": "Multi-party Escrow (MPE) is a smart contract API and payment channel system that enables payments in the SingularityNet platform with minimal on-Blockchain interactions between AI Consumers and AI service providers. It allows for conditional transactions between two transacting parties through an Escrow account, using a set of simple unidirectional payment channels. The MPE contract includes functionalities such as a wallet with deposit and withdraw functions, as well as support functions for controlling these channels."
   },
   {
     "question": "How to use the service when my freecalls are over?",
-    "llm_answer": "When your free calls are over, you will need to pay for any new calls to the service. To use the service after your free calls are exhausted, you will need a wallet with some ethers and AGIX. You can either pay through Metamask or through a General wallet (such as PayPal). Once you have set up your wallet and have the necessary funds, you can select the service and click on \"Invoke\" to send the service to the blockchain. You will then need to sign the Metamask transaction to complete the payment. After the transaction is mined, you will be able to use the service again.",
+    "llm_answer": "When your free calls are over, you will need to pay for any new calls to the service. To use the service after your free calls are exhausted, you will need a wallet with some ethers and AGIX. You can either pay through Metamask or through a General wallet (such as PayPal). Once you have set up your wallet and have the necessary funds, you can select a wallet and choose a method to identify the service. After setting up all the required information, click \"Invoke\" and sign the Metamask transaction to send the service to the blockchain. Wait for the response and you can continue to use the service until it expires.",
     "llm_answer_langchain": "If your free calls are exhausted, you will find options to create a wallet or to use your existing MetaMask wallet. You can then make a call by following these steps:\n\n1. Open the respective service's page.\n2. In the Service Demo section, you will notice the Free calls pending count, provided you have already logged in to the system.\n3. Click on the RUN FOR FREE button.\n4. You will be taken to the service's input screen.\n5. Fill in the necessary details.\n6. Click on INVOKE.\n\nNote: Don't close the application until the results are displayed on the same screen after service execution."
   },
   {
     "question": "What is the name of the config file for daemon?",
-    "llm_answer": "The name of the config file for daemon is \"snetd.config.json\".",
+    "llm_answer": "The name of the config file for the daemon is \"snetd.config.json\".",
     "llm_answer_langchain": "The name of the config file for the daemon is \"snetd.config.json\"."
   },
   {

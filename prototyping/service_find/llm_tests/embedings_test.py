@@ -1,12 +1,13 @@
 import json
 import os
 
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 from prototyping.assistant_utils import APIServicesInformationGetter
 from prototyping.service_find.llm_tests.tests_prompts import get_user_tasks
-from openai.embeddings_utils import cosine_similarity
+from prototyping.qna_Agent.src.QnA import distances_from_embeddings
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 def get_services_documentation_embeddings(documentation_dict):
@@ -22,13 +23,13 @@ def search_closest_documentation(available_doc_embeddings, user_task, n=5):
     embedding = get_embedding(user_task, model='text-embedding-ada-002')
     distances = {}
     for service_name, documentation_embeddings in available_doc_embeddings.items():
-        distances[service_name] = cosine_similarity(documentation_embeddings, embedding)
+        distances[service_name] = distances_from_embeddings(documentation_embeddings, embedding)
     distances = {k: v for k, v in sorted(distances.items(), key=lambda item: item[1], reverse=True)}
     return list(distances.keys())[:n]
 
 def get_embedding(text, model="text-embedding-ada-002"):
     text = text.replace("\n", " ")
-    emd = openai.Embedding.create(input=[text], model=model)['data'][0]['embedding']
+    emd = client.embeddings.create(input=[text], model=model)['data'][0]['embedding']
     return emd
 if __name__ == '__main__':
 

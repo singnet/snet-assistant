@@ -5,9 +5,11 @@ import json
 import logging
 import os
 import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 import sys
 import time
-import openai.error
 logger = logging.getLogger()
 #gpt_model_name = 'text-davinci-003'  # 'gpt-3.5-turbo'#
 gpt_model_name = 'gpt-3.5-turbo'
@@ -58,8 +60,8 @@ class OpenAIChat:
         while response is None:
             try:
                 self.log.debug("__run_chat_completion_insist run: {prompt}")
-                response = openai.ChatCompletion.create(model=self.model_name, messages=prompt, temperature=temperature)
-            except openai.error.RateLimitError as e:
+                response = client.chat.completions.create(model=self.model_name, messages=prompt, temperature=temperature)
+            except Exception as e:
                 if time.time() - t1 > self.response_timeout:
                     self.log.debug("__run_chat_completion_insist ERROR, TIMEOUT")
                     return None
@@ -73,8 +75,8 @@ class OpenAIChat:
             prompt = [m.to_dict() for m in prompt]
             self.log.info(f" __get_chat_completion_response call")
             response = self.__run_chat_completion_insist(prompt, temperature)
-            if response is not None and "choices" in response and len(response["choices"]) > 0 and "message" in response["choices"][0]:
-                return response['choices'][0]['message']['content']
+            if response is not None and len(response.choices) > 0:
+                return response.choices[0].message.content
             else:
                 return ''
         except Exception as ex:
@@ -86,10 +88,10 @@ class OpenAIChat:
         t1 = time.time()
         while response is None:
             try:
-                response = openai.Completion.create(model=self.model_name, prompt=prompt,
+                response = client.completions.create(model=self.model_name, prompt=prompt,
                                                     request_timeout=self.response_timeout,
                                                     temperature=temperature, max_tokens=256)
-            except openai.error.RateLimitError as e:
+            except openai.RateLimitError as e:
                 if time.time() - t1 > self.response_timeout:
                     self.log.debug("__run_completion_insist ERROR, TIMEOUT")
                     return None
@@ -110,8 +112,8 @@ class OpenAIChat:
             prompt = "\n".join(new_prompt)
             logger.info(f" __get_completion_response call: {prompt}")
             response = self.__run_completion_insist(prompt, temperature)
-            if response is not None and "choices" in response and len(response["choices"]) > 0 and "text" in response["choices"][0]:
-                return response["choices"][0]["text"]
+            if response is not None and len(response.choices) > 0:
+                return response.choices[0].text
             else:
                 return ''
 
@@ -160,7 +162,7 @@ class OpenAIChatCaller:
 
 
     def __init__(self):
-        openai.api_key = os.environ["OPENAI_API_KEY"] # !!!!!!!!!!!!!!!!!!!!1
+         # !!!!!!!!!!!!!!!!!!!!1
         self.log = logging.getLogger(__name__ + '.' + type(self).__name__)
 
 

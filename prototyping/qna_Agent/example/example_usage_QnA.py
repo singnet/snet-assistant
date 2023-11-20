@@ -25,5 +25,5 @@ try:
 except ImportError as e:
     print(f"Error importing dataProcessor: {e}")
 else:
-    # print(QnA.respond_to_context("How can service developers register their custom UIs?"))
-    answers_for_all_questions()
+    print(QnA.respond_to_context("What is the name of the config file for daemon?"))
+    #answers_for_all_questions()

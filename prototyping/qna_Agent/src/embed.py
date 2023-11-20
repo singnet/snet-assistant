@@ -1,5 +1,7 @@
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 import pandas as pd
 from dotenv import load_dotenv, find_dotenv
 import time
@@ -10,7 +12,7 @@ import ast
 # Load your API key from an environment variable or secret management service
 load_dotenv(find_dotenv())
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
+
 
 base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 data_dir_path = os.path.join(base_dir, "data")
@@ -60,10 +62,8 @@ def embed_question(question: str):
         np.array: Embedding of the question.
     """
     try:
-        response = openai.Embedding.create(
-            model=EMBEDDING_MODEL,
-            input=question
-        )
+        response = client.embeddings.create(model=EMBEDDING_MODEL,
+        input=question)
         return np.array(response.data[0].embedding)
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -85,11 +85,9 @@ def embed_context(context_list: list):
         flattened = [item for sublist in batch for item in sublist if sublist]
 
         try:
-            response = openai.Embedding.create(
-                model=EMBEDDING_MODEL,
-                input=flattened
-            )
-            batch_embeddings = [data["embedding"] for data in response["data"]]
+            response = client.embeddings.create(model=EMBEDDING_MODEL,
+            input=flattened)
+            batch_embeddings = [data.embedding for data in response.data]
             embeddings.append(batch_embeddings)
         except Exception as e:
             print(f"An error occurred: {e}")

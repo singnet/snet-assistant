@@ -2,6 +2,7 @@ import json
 import os
 
 # import llm_gate
+
 import hyperon as hp
 
 
@@ -52,11 +53,11 @@ if __name__ == '__main__':
     with open("prototyping/service_find/metta_guidance/question_types_guidance.metta", "r") as f:
         script = f.read()
     env_builder = hp.Environment.custom_env(
-        include_paths=["/media/sveta/hdisk4/singnet/hyperon-experimental/python/sandbox/neurospace"])
+        include_paths=["/media/sveta/hdisk4/singnet/metta-motto/motto"])
     metta = hp.MeTTa(env_builder=env_builder)
     print(metta.run(script))
-    detect_all_question_types()
-    #answer_specific_service_question()
+    #detect_all_question_types()
+    answer_specific_service_question()
 
 
 
