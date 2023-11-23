@@ -25,5 +25,5 @@ try:
 except ImportError as e:
     print(f"Error importing dataProcessor: {e}")
 else:
-    print(QnA.respond_to_context("What is the name of the config file for daemon?"))
+    print(QnA.respond_to_context("Can I publish service without using grpc?"))
     #answers_for_all_questions()

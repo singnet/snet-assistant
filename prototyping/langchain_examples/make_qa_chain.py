@@ -7,9 +7,8 @@ import logging
 from get_retriever import get_retriever
 from langchain.prompts import ChatPromptTemplate
 from langchain.chat_models import ChatOpenAI
-from langchain.embeddings import OpenAIEmbeddings
 from langchain.schema.output_parser import StrOutputParser
-from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
+from langchain.schema.runnable import RunnablePassthrough
 from langchain.prompts.prompt import PromptTemplate
 from langchain.schema import format_document
 
@@ -57,7 +56,8 @@ def answer_for_all_questions(chain):
     print()
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, model_kwargs = {"timeout":10} )
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, timeout=10 )
     chain = make_qa_chain(llm)
-    answer_for_all_questions(chain)
-    #print("Where to obtain service metadata?")
+    #answer_for_all_questions(chain)
+    result = chain.invoke("Where to obtain service metadata?")
+    print(result)
