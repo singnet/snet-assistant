@@ -162,7 +162,7 @@ class ServicesInformationGetter:
         group_data = []
         for group in data:
             group_data.append(group)
-        return  group_data
+        return group_data
 
 
 

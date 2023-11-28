@@ -14,10 +14,10 @@ def get_user_tasks(filename):
 def is_correct(result:str, correct_services:str) -> bool:
     if  "[" in result:
         result = result[result.index("["):]
-    if len(result) > 4 and result[0] == "[" and result[-2] == "]":
-        services = result[1: - 2].split(",")
+    if len(result) > 4 and result[0] == "[" and ("]" in result):
+        services = result[1: result.find("]")].split(",")
         count = 0
-        services = [service.strip().replace("\"", "").lower() for service in services]
+        services = [service.strip().replace("\"", '').replace("'", '').lower() for service in services]
         if len(services) > 0 and len(correct_services) == 0:
             return False
         for correct in correct_services:
@@ -38,12 +38,12 @@ if __name__ == '__main__':
     '''
      use services short descriptions as prompt to get service which solves user's task
     '''
-    with open("prototyping/service_find/metta_llm/assist_operations.metta", "r") as f:
+    with open("prototyping/metta_llm/metta_llm/assist_operations.metta", "r") as f:
         script = f.read()
     env_builder = hp.Environment.custom_env(include_paths=["/media/sveta/hdisk4/singnet/hyperon-experimental/python/sandbox/neurospace"])
     metta = hp.MeTTa(env_builder=env_builder)
     print(metta.run(script))
-    user_tasks = get_user_tasks("prototyping/service_find/llm_tests/which_service_db.json")
+    user_tasks = get_user_tasks("prototyping/metta_llm/llm_tests/which_service_db.json")
     correct_answers = 0
     for task in user_tasks:
         result = metta.run(f"!(respond init  () \"{task['question']}\")", True)
@@ -54,7 +54,6 @@ if __name__ == '__main__':
             correct_answers += 1
         else:
             print(task)
-        break
     print(correct_answers/len(user_tasks))
 
     # json_data = json.dumps(user_tasks, indent=2)
