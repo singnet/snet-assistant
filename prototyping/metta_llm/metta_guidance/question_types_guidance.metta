@@ -1,6 +1,6 @@
 ;!(extend-py! prototyping.assistant_utils.llm_gate_temp)
 !(extend-py! llm_gate)
-!(extend-py! prototyping/assistant_utils/data_getters/data_getter_extension)
+!(extend-py! prototyping.assistant_utils.data_getters.data_getter_extension)
 !(import! &service-finder-template prototyping/metta_llm/metta_guidance/templates/service_finder_template.metta)
 !(import! &question-type-template prototyping/metta_llm/metta_guidance/templates/question_type_selector_template.metta)
 !(import! &platform-assistant-template prototyping/metta_llm/metta_guidance/templates/platform_assistant_template.metta)
