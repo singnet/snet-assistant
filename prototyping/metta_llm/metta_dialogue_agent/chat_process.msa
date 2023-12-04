@@ -14,7 +14,7 @@
    (superpose
     (
         (change-state! (user-question) ( $user-msg))
-         (llm &question-type-template)
+         (llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) &question-type-template)
     ))
     )
 
@@ -33,9 +33,9 @@
 
 (= (answer_question $type)
     (if (== $type "Services")
-    (llm  &service-finder-template)
-    (if (== $type "SNET Platform")  (let $prompt &platform-assistant-template (llm (Messages (history) $prompt)))
-    (if  (== $type "SpecificService") (let $prompt &specific-service-template (llm  (Messages (history) $prompt)) ) (let $prompt &random-question-template (llm &random-question-template)))
+    (llm (Agent (chat-gpt "gpt-3.5-turbo-0613"))  &service-finder-template)
+    (if (== $type "SNET Platform")  (let $prompt &platform-assistant-template (llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) (Messages (history) $prompt)))
+    (if  (== $type "SpecificService") (let $prompt &specific-service-template (llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) (Messages (history) $prompt)) ) (let $prompt &random-question-template (llm &random-question-template)))
  ))
  )
 
@@ -44,7 +44,7 @@
     (superpose
     (
         (let () (change-state! (user-question) (  (extract_message $user-msg)))(empty))
-        (let $type ( llm &question-type-template)
+        (let $type ( llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) &question-type-template)
         (answer_question $type)
         )
         )

@@ -62,6 +62,8 @@ class ServicesInformationGetter:
         return ServiceDescription(display_name, url, short_description, description_, contributors)
 
     def __get_documentation_from_url(self, url):
+
+        # ToDo  need to read documentation from url like https://singnet.github.io/dnn-model-services/users_guide/i3d-video-action-recognition.html
         git_host = "https://github.com"
         if git_host not in url:
             return None

@@ -17,6 +17,6 @@ if __name__ == '__main__':
 
     env_builder = hp.Environment.custom_env(include_paths=[metta_motto_path])
     metta = hp.MeTTa(env_builder=env_builder)
-    run_script("prototyping/metta_llm/metta_dialogue_agent/test_llm_agent.metta", metta)
+    run_script("prototyping/metta_llm/metta_dialogue_agent/test_chat_agent.metta", metta)
 
 

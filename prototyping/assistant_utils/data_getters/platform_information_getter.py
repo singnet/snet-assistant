@@ -12,6 +12,9 @@ dev_portal_url = "https://github.com/singnet/dev-portal.git"
 
 
 class PlatformInformationGetter:
+    '''
+    stores all md documents from https://github.com/singnet/dev-portal in chroma database
+    '''
     def __init__(self, embeddings):
         self.embeddings_getter = embeddings
         self.__original_docs_folder = os.path.join(data_dir, "original_docs")
@@ -33,6 +36,10 @@ class PlatformInformationGetter:
             self.load_docs()
 
     def _download_md_files(self):
+        '''
+        load all md files content from https://github.com/singnet/dev-portal
+        :return:
+        '''
         if not os.path.exists(data_dir):
             raise Exception(f"{data_dir} does not exists")
         dev_portal_path = os.path.join(self.__original_docs_folder, "dev-portal")

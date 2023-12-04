@@ -12,8 +12,10 @@ from prototyping.assistant_utils.data_getters.services_information_getter import
 from prototyping.assistant_utils.data_processors import DocProcessor
 from prototyping.assistant_utils.data_processors import AbstractEmbeddings
 
-
 class ServicesDbController:
+    '''
+    Stores documentation about services in chroma database
+    '''
 
     def __init__(self, embeddings: AbstractEmbeddings, services_information_getter: ServicesInformationGetter):
         self.embeddings_getter = embeddings
@@ -36,6 +38,9 @@ class ServicesDbController:
             self._load_docs()
 
     def _load_docs(self):
+        '''
+            loads all documents into database
+        '''
         services_names = self.services_information_getter.display_names
         i = 1
         for name in services_names:
@@ -50,6 +55,9 @@ class ServicesDbController:
                     self.collection.add(embeddings=embeddings, documents=chunks,  metadatas=[{'source': name.lower()}]*length, ids=ids)
 
     def get_closest_documentation(self, service_name, question, docs_count=5):
+        '''
+        returns closest (according to embeddings) document for given question about given service.
+        '''
         embeddings_values = self.embeddings_getter.get_embeddings(question)
         context = self.collection.query(query_embeddings=[embeddings_values], n_results=docs_count, where={"source": service_name.lower()})
         docs = np.unique(context["documents"][0])
