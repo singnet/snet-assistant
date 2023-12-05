@@ -6,6 +6,7 @@
 !(import! &random-question-template templates/random_question_template.metta)
 !(extend-py! motto.llm_gate)
 
+!(bind! &Agent (Agent (chat-gpt "gpt-3.5-turbo-0613")))
 
 !(let $question (new-state "[some question about service]")
     ( let () (add-atom &self (= (user-question) $question)) (empty)))
@@ -14,7 +15,7 @@
    (superpose
     (
         (change-state! (user-question) ( $user-msg))
-         (llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) &question-type-template)
+         (llm &Agent &question-type-template)
     ))
     )
 
@@ -32,10 +33,10 @@
 )
 
 (= (answer_question $type)
-    (if (== $type "Services")
-    (llm (Agent (chat-gpt "gpt-3.5-turbo-0613"))  &service-finder-template)
-    (if (== $type "SNET Platform")  (let $prompt &platform-assistant-template (llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) (Messages (history) $prompt)))
-    (if  (== $type "SpecificService") (let $prompt &specific-service-template (llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) (Messages (history) $prompt)) ) (let $prompt &random-question-template (llm &random-question-template)))
+    (if (== $type "Services") (let $prompt &service-finder-template  (llm &Agent  (Messages (history) $prompt)))
+    (if (== $type "SNET Platform")  (let $prompt &platform-assistant-template (llm &Agent  (Messages (history) $prompt)))
+    (if  (== $type "SpecificService") (let $prompt &specific-service-template (llm &Agent  (Messages (history) $prompt)) ) (let $prompt &random-question-template
+    (llm &Agent  (Messages (history) $prompt))))
  ))
  )
 
@@ -44,7 +45,7 @@
     (superpose
     (
         (let () (change-state! (user-question) (  (extract_message $user-msg)))(empty))
-        (let $type ( llm (Agent (chat-gpt "gpt-3.5-turbo-0613")) &question-type-template)
+        (let $type ( llm &Agent &question-type-template)
         (answer_question $type)
         )
         )
