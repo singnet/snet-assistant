@@ -84,9 +84,9 @@ if __name__ == '__main__':
     metta_motto_path = os.environ["METTAMOTOPATH"]
     env_builder = hp.Environment.custom_env(include_paths=[metta_motto_path])
     metta = hp.MeTTa(env_builder=env_builder)
-    detect_all_question_types()
+    #detect_all_question_types()
     #answer_specific_service_question()
-    #suggest_service()
+    suggest_service()
     #answer_platform_question()
 
 
