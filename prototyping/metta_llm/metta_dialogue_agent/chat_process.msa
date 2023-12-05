@@ -1,0 +1,55 @@
+!(extend-py! prototyping.assistant_utils.data_getters.data_getter_extension)
+!(import! &service-finder-template templates/service_finder_template.metta)
+!(import! &question-type-template templates/question_type_selector_template.metta)
+!(import! &platform-assistant-template templates/platform_assistant_template.metta)
+!(import! &specific-service-template templates/specific_service_template.metta)
+!(import! &random-question-template templates/random_question_template.metta)
+!(extend-py! motto.llm_gate)
+
+!(bind! &Agent (Agent (chat-gpt "gpt-3.5-turbo-0613")))
+
+!(let $question (new-state "[some question about service]")
+    ( let () (add-atom &self (= (user-question) $question)) (empty)))
+
+(= (question-type $user-msg)
+   (superpose
+    (
+        (change-state! (user-question) ( $user-msg))
+         (llm &Agent &question-type-template)
+    ))
+    )
+
+(= (user-query)
+   (get-state (user-question)))
+
+(= (add_question_context)
+   ( get_question_context (get-state (user-question)) )
+
+)
+
+(= (get_prompt_for_service)
+    (let $t (get-state (user-question)) (
+    (get_service_prompt $t)))
+)
+
+(= (answer_question $type)
+    (if (== $type "Services") (let $prompt &service-finder-template  (llm &Agent  (Messages (history) $prompt)))
+    (if (== $type "SNET Platform")  (let $prompt &platform-assistant-template (llm &Agent  (Messages (history) $prompt)))
+    (if  (== $type "SpecificService") (let $prompt &specific-service-template (llm &Agent  (Messages (history) $prompt)) ) (let $prompt &random-question-template
+    (llm &Agent  (Messages (history) $prompt))))
+ ))
+ )
+
+(=(extract_message (user $message)) $message)
+(= (respond $user-msg)
+    (superpose
+    (
+        (let () (change-state! (user-question) (  (extract_message $user-msg)))(empty))
+        (let $type ( llm &Agent &question-type-template)
+        (answer_question $type)
+        )
+        )
+    ))
+
+
+!(Response (respond (messages)))

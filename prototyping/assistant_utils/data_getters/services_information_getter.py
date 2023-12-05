@@ -10,12 +10,12 @@ from bs4 import BeautifulSoup
 
 
 class ServiceDescription:
-    def __init__(self, display_name, url="", short_description="", description=""):
+    def __init__(self, display_name, url="", short_description="", description="", contributors = []):
         self.url = url
         self.short_description = short_description
         self.description = description
         self.display_name = display_name
-
+        self.contributors = contributors
 
 class ServicesInformationGetterCreator:
     @staticmethod
@@ -27,6 +27,7 @@ class ServicesInformationGetterCreator:
             return APIServicesInformationGetter()
         return None
 
+
 class ServicesInformationGetter:
     ''' Abstract class defines interface to get information about services '''
 
@@ -36,13 +37,14 @@ class ServicesInformationGetter:
         self.__full_descriptions = {}
         self.__services_documentation = {}
         self.__display_names = []
+        self.services_descriptions = []
+        self.services_group_data = {}
 
-    @property
     @abstractmethod
-    def services_descriptions(self):
+    def _load_services_data(self):
         pass
 
-    def _create_description_structure(self, display_name, description):
+    def _create_description_structure(self, display_name, description, contributors_data):
         url = ""
         if "url" in description:
             url = description["url"]
@@ -52,9 +54,16 @@ class ServicesInformationGetter:
         description_ = ""
         if 'description' in description:
             description_ = description['description']
-        return ServiceDescription(display_name, url, short_description, description_)
+
+        contributors = []
+        if contributors_data is not None:
+            for item in contributors_data:
+                contributors.append(item)
+        return ServiceDescription(display_name, url, short_description, description_, contributors)
 
     def __get_documentation_from_url(self, url):
+
+        # ToDo  need to read documentation from url like https://singnet.github.io/dnn-model-services/users_guide/i3d-video-action-recognition.html
         git_host = "https://github.com"
         if git_host not in url:
             return None
@@ -115,13 +124,14 @@ class ServicesInformationGetter:
         elif len(description.description) >= len(description.short_description):
             return description.description
         else:
-           return description.short_description
+            return description.short_description
 
     @property
     def services_documentation(self):
         if len(self.__services_documentation) == 0:
             for description in self.services_descriptions:
-                self.__services_documentation[description.display_name] = self._get_service_documentation_inner(description)
+                self.__services_documentation[description.display_name] = self._get_service_documentation_inner(
+                    description)
         return self.__services_documentation
 
     def get_service_full_descriptions(self, service_name):
@@ -145,6 +155,18 @@ class ServicesInformationGetter:
             return self.services_documentation[service_name]
         return None
 
+    def get_service_group_data(self, service_name):
+        if service_name in self.services_group_data:
+            return self.services_group_data[service_name]
+        return None
+
+    def load_groups_data(self, data):
+        group_data = []
+        for group in data:
+            group_data.append(group)
+        return group_data
+
+
 
 class JSONServicesInformationGetter(ServicesInformationGetter):
     ''' Loads information about services from json files '''
@@ -153,7 +175,7 @@ class JSONServicesInformationGetter(ServicesInformationGetter):
         super().__init__()
         self.log = logging.getLogger(__name__ + '.' + type(self).__name__)
         self.json_dir = json_dir
-        self.__services_descriptions = []
+        self._load_services_data()
 
     def download_json_data(self):
         current_dir = pathlib.Path(__file__).parent.resolve()
@@ -163,37 +185,46 @@ class JSONServicesInformationGetter(ServicesInformationGetter):
         os.system(f"sh {current_dir}/sh/load-json-data.sh {self.json_dir}")
         self.log.info(f"__download_json_data: finish download")
 
-    @property
-    def services_descriptions(self):
-        if len(self.__services_descriptions) == 0:
-            files = []
-            if os.path.exists(self.json_dir):
-                files = os.listdir(self.json_dir)
-            if len(files) == 0:
-                self.download_json_data()
-                files = os.listdir(self.json_dir)
-            for file_path in files:
-                # check if current file_path is a file
-                json_file = os.path.join(self.json_dir, file_path)
-                if os.path.isfile(json_file):
-                    description = self.__load_description_from_json(json_file)
-                    if description is not None:
-                        self.__services_descriptions.append(description)
-        return self.__services_descriptions
+    def _load_services_data(self):
+        files = []
+        if os.path.exists(self.json_dir):
+            files = os.listdir(self.json_dir)
+        if len(files) == 0:
+            self.download_json_data()
+            files = os.listdir(self.json_dir)
+        for file_path in files:
+            # check if current file_path is a file
+            json_file = os.path.join(self.json_dir, file_path)
+            if os.path.isfile(json_file):
+                # read json
+                try:
+                    if os.path.exists(json_file):
+                        with open(json_file, 'r') as f:
+                            data = json.load(f)
+                        # load data from json
+                        description = self.__load_description_from_json(data)
+                        if description is not None:
+                            self.services_descriptions.append(description)
+                            # also load group data for current service
+                            if description.display_name is None:
+                                return
+                            if ('groups' in data) and (len(data['groups']) > 0):
+                                self.services_group_data[description.display_name] = self.load_groups_data(data['groups'])
+                except Exception as ex:
+                    self.log.error(f"__load_description_from_json: Exception occurred for json file {json_file}: {ex}")
+                    return None
 
-    def __load_description_from_json(self, json_file_path):
-        try:
-            if os.path.exists(json_file_path):
-                with open(json_file_path, 'r') as f:
-                    data = json.load(f)
-                if ('service_description' in data) and ('display_name' in data):
-                    display_name = data['display_name']
-                    description = data['service_description']
-                    return self._create_description_structure(display_name, description)
-            return None
-        except Exception as ex:
-            self.log.error(f"__load_description_from_json: Exception occurred for json file {json_file_path}: {ex}")
-            return None
+
+    def __load_description_from_json(self, data):
+        if ('service_description' in data) and ('display_name' in data):
+            display_name = data['display_name']
+            description = data['service_description']
+            contributors = []
+            if "contributors" in data:
+                contributors = data["contributors"]
+            return self._create_description_structure(display_name, description, contributors)
+        return None
+
 
 
 class APIServicesInformationGetter(ServicesInformationGetter):
@@ -202,9 +233,9 @@ class APIServicesInformationGetter(ServicesInformationGetter):
     def __init__(self):
         super().__init__()
         self.log = logging.getLogger(__name__ + '.' + type(self).__name__)
-        self.__services_descriptions = []
+        self._load_services_data()
 
-    def __load_services_info(self):
+    def __request_services_info(self):
         r = requests.post("https://marketplace-mt-v2.singularitynet.io/contract-api/service", json={
             "q": "",
             'limit': 80,
@@ -219,12 +250,21 @@ class APIServicesInformationGetter(ServicesInformationGetter):
             return data["data"]['result']
         return None
 
-    @property
-    def services_descriptions(self):
-        if len(self.__services_descriptions) == 0:
-            services_info = self.__load_services_info()
-            for info in services_info:
-                if 'display_name' in info:
-                    description_structure = self._create_description_structure(info['display_name'], info)
-                    self.__services_descriptions.append(description_structure)
-        return self.__services_descriptions
+    def __request_groups_data(self, service):
+        r = requests.get(
+            f"https://marketplace-mt-v2.singularitynet.io/contract-api/org/{service['org_id']}/service/{service['service_id']}")
+        data = r.json()
+        if ('data' in data) and ('groups' in data['data']):
+            service['groups'] = data['data']['groups']
+            return service['groups'][0] if len(service['groups']) > 0 else None
+        return None
+
+    def _load_services_data(self):
+        services_info = self.__request_services_info()
+        for info in services_info:
+            if 'display_name' in info:
+                description_structure = self._create_description_structure(info['display_name'], info)
+                self.services_descriptions.append(description_structure)
+                if info['display_name'] is not None:
+                    groups = self.__request_groups_data(info)
+                    self.services_group_data[info['display_name']] = self.load_groups_data(groups)

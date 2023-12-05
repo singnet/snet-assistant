@@ -33,8 +33,7 @@ class DataProcessor:
         self.base_dir = os.path.dirname(
             os.path.dirname(os.path.realpath(__file__)))
         self.data_dir_path = os.path.join(self.base_dir, "data")
-        self.docs_path = os.path.join(
-            self.data_dir_path, "dev-portal-master/docs")
+        self.docs_path = [os.path.join(self.data_dir_path, "dev-portal-master/docs"), os.path.join(self.data_dir_path, "dev-portal-master/tutorials")]
         self.total = {}
         self.download_files()
         self.get_md_files_in_all_directories()
@@ -62,7 +61,7 @@ class DataProcessor:
         print(f"Repository downloaded to {self.data_dir_path}")
 
     @staticmethod
-    def get_all_links(data_url: str) -> list[str]:
+    def get_all_links(data_url: str, level=2) -> list[str]:
         """Returns a list of all the markdown links in the given directory.
 
         Args:
@@ -73,7 +72,10 @@ class DataProcessor:
         """
 
         try:
-            return glob(f"{data_url}/**/*.md", recursive=True)
+            result = glob(f"{data_url}/*.md", recursive=True)
+            if level == 2:
+                result.extend(glob(f"{data_url}/*/*.md", recursive=True))
+            return result
         except Exception as e:
             print(e)
             return []
@@ -88,21 +90,16 @@ class DataProcessor:
         Returns:
             str: Cleaned markdown content.
         """
-
-        pattern_to_remove = r'Page settings.*?\nMicro navigation\n.*?(?=\n\n|\Z)'
-
-        text = ""
         with open(link, "r", encoding="utf-8") as input_file:
             text = input_file.read()
 
         html = markdown.markdown(text)
         soup = BeautifulSoup(html, "html.parser")
 
-        text = soup.get_text()
-        clean_text = re.sub(pattern_to_remove, "\n", text,
-                            flags=re.DOTALL | re.IGNORECASE)
-
-        return clean_text
+        text = soup.get_text().strip()
+        if text.startswith("Page settings") and "\n\n" in text:
+            text = text[str(text).find("\n\n") + 2:]
+        return text
 
     @staticmethod
     def get_top_level_dirs(dir_path):
@@ -120,20 +117,23 @@ class DataProcessor:
 
     def get_md_files_in_all_directories(self) -> dict[str, list[str]]:
         """Returns a dictionary of all the markdown files in the given directory and its subdirectories."""
-
-        list_dirs = self.get_top_level_dirs(self.docs_path)
+        list_dirs = []
+        for ph in self.docs_path:
+            list_dirs.extend(self.get_top_level_dirs(ph))
+        list_dirs.extend(self.docs_path)
         for dirpath in list_dirs:
-            l = []
             temp = []
-            if dirpath != self.docs_path:
+            if dirpath not in self.docs_path:
                 l = self.get_all_links(dirpath)
-                with ThreadPoolExecutor(max_workers=5) as executor:
-                    results = executor.map(self.save_data, l)
+            else:
+                l = self.get_all_links(dirpath, level=1)
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                results = executor.map(self.save_data, l)
 
-                for result in results:
-                    temp.append(result)
+            for result in results:
+                temp.append(result)
 
-                self.total[dirpath] = temp
+            self.total[dirpath] = temp
 
     @staticmethod
     def get_text_chunks(text: str, chunk_token_size: int = CHUNK_SIZE) -> list[str]:
@@ -188,11 +188,12 @@ class DataProcessor:
 
         for key, value in (self.total.items()):
             temp1 = []
-            for i in value:
-                temp1.append(self.get_text_chunks(i))
-                paths = Path(key)
-                paths = "/".join(paths.parts[-2:])
-            total_test.append([paths, temp1])
+            if len(value) > 0:
+                for i in value:
+                    temp1.append(self.get_text_chunks(i))
+                    paths = Path(key)
+                    paths = "/".join(paths.parts[-2:])
+                total_test.append([paths, temp1])
         df_temp = pd.DataFrame(total_test, columns=['path', 'chuck_text'])
         df_temp.to_csv(os.path.join(
             self.data_dir_path, "dataset.csv"), index=False)

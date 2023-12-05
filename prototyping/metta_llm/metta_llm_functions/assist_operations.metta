@@ -1,5 +1,5 @@
 !(extend-py!  llm_gate)
-!(extend-py! prototyping.assistant_utils.descriptions_getters.data_getter_extension)
+!(extend-py! prototyping.assistant_utils.data_getters.data_getter_extension)
 
 (= (append-expr $xs $x)
    (collapse (superpose ((superpose $xs) $x))))

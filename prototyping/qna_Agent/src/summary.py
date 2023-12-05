@@ -9,7 +9,7 @@ from dotenv import load_dotenv, find_dotenv
 
 # Load environment variables
 _ = load_dotenv(find_dotenv())
-openai.api_key = os.getenv('OPENAI_API_KEY')
+
 
 # Define paths
 base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))

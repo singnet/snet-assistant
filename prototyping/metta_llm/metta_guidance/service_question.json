@@ -1,0 +1,47 @@
+[
+  {
+    "question": "What is the Abstractive Question Answering service on the snet platform?",
+    "answer":"The Abstractive Question Answering service on the snet platform is a service that provides answers to questions using a large knowledge base and a pretrained model for the Open-Domain Question Answering task."
+  },
+  {
+    "question": "What is the Abstractive Question Answering service input?",
+    "answer": "The service takes a pair of text files as input, one for the context and one for the question. It then uses these inputs to generate an answer using a QANet neural model trained on the SQuAD dataset. The model runs on a P100 GPU and is designed to handle long contexts of up to 1000 tokens."
+  },
+  {
+    "question": "What kind of limitations are there on the Abstractive Question Answering service input ?",
+    "answer": "The context is limited to 1000 tokens and the question is limited to 100 tokens."
+  },
+  {
+    "question": "Hi, I want to use the Deezer Spleeter service, tell me about it.",
+    "answer": "The Deezer Spleeter service on the snet platform is a service that uses the Deezer Spleeter algorithm to perform source separation on audio files. It separates the vocals and the accompaniment from the input audio sample using machine learning techniques."
+  },
+  {
+    "question": "How does the Deezer Spleeter service work?",
+    "answer":"To use the Deezer Spleeter service, you need to provide an audio sample as input, either by specifying an audio URL or by providing an audio bytes array. The service then uses a pre-trained source separation model to separate the vocals and the accompaniment from the input audio. It uses machine learning techniques to analyze the audio and make the separation."
+    
+  },
+  {
+    "question": "How much does it cost to use the Deezer Spleeter service?",
+    "answer":" The price for using the Deezer Spleeter service is 0.00000001 AGI."
+  },
+  {
+    "question": "Do I need to have a SingularityNET account to use the Deezer Spleeter service?",
+    "answer": "Yes, you need to have a SingularityNET account to use the Deezer Spleeter service. You can sign up for an account"
+  },
+  {
+    "question": "What is the purpose of the Text Understanding service?",
+    "answer":"The Text Understanding service processes text using a recurrent LSTM network to either tag words or classify the intent of given sentences."
+  },
+  {
+    "question": "How does the Text Understanding service work?",
+    "answer":"The service requires inputs such as the gRPC method (either slot_tagging or intent), URLs for the training and test files, URLs for the query, slot, and intent files (if applicable), vocabulary size, number of slot labels, number of intent labels (if applicable), and a URL for the sentences file to be used as input for the trained model. The service then trains a recurrent LSTM network model and provides two URLs as output - one for the model's output and another for the trained model file."
+  },
+  {
+    "question": "Can I use the Text Understanding service from SingularityNET DApp?",
+    "answer": "Yes, you can use the Text Understanding service from SingularityNET DApp."
+  },
+  {
+    "question": "Can you explain what the Image Super Resolution service does?",
+    "answer": "The Image Super Resolution service takes an image as input and uses machine learning methods to generate higher resolution versions of that image. It uses pre-trained models to enhance the details and quality of the image."
+  }
+]
