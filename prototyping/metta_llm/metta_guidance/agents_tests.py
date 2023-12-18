@@ -7,9 +7,9 @@ from prototyping.metta_llm.metta_llm_functions.service_adviser_test import is_co
 from prototyping.metta_llm.metta_guidance.runner import run_script
 
 types = {}
-types['services'] = "prototyping/metta_llm/metta_guidance/which_service_db.json"
-types['snet'] = "prototyping/metta_llm/metta_guidance/platform_question_answer.json"
-types['specificservice'] = "prototyping/metta_llm/metta_guidance/service_question.json"
+types['services'] = "data_for_tests/which_service_db.json"
+types['snet'] = "data_for_tests/platform_question_answer.json"
+types['specificservice'] = "data_for_tests/service_question.json"
 
 def get_user_tasks(filename):
     json_file_path = os.path.join(filename)
@@ -19,7 +19,6 @@ def get_user_tasks(filename):
 
 
 def detect_question_type(type_name, filename):
-    run_script("prototyping/metta_llm/metta_guidance/question_types_guidance.metta", metta)
     user_tasks = get_user_tasks(filename)
     correct_answers = 0
     for task in user_tasks:
@@ -35,23 +34,21 @@ def detect_all_question_types():
         detect_question_type(k, v)
 
 def answer_specific_service_question():
-    run_script("prototyping/metta_llm/metta_guidance/question_types_guidance.metta", metta)
 
     service_questions = get_user_tasks(types['specificservice'])
     count = 0
     for task in service_questions:
-        result = metta.run(f"!(respond \"{task['question']}\")", True)
+        result = metta.run(f"!(respond \"{task['question']}\" \"SpecificService\")", True)
         count += 1
         print(count)
         print("llm answer:", result)
         print("correct answer:", task["answer"])
 
 def answer_platform_question():
-    run_script("prototyping/metta_llm/metta_guidance/question_types_guidance.metta", metta)
     service_questions = get_user_tasks(types['snet'])
     for task in service_questions:
         q_type = metta.run(f"!(question-type \"{task['question']}\")", True)
-        result = metta.run(f"!(respond \"{task['question']}\")", True)
+        result = metta.run(f"!(respond \"{task['question']}\" \"SNET Platform\")", True)
         task.update({'gpt3_answer': repr(result[1])})
         task.update({'question type': repr(q_type[1])})
         print(result)
@@ -61,18 +58,17 @@ def answer_platform_question():
         f.write(json_data)
 
 def suggest_service():
-    run_script("prototyping/metta_llm/metta_guidance/service_finder_guidance.metta", metta)
     questions = get_user_tasks(types["services"])
     count = 0
     correct = 0
     for task in questions:
-        metta.run(f"!(change-state! (user-question) (\"{task['question']}\"))", True)
-        result = metta.run("!(llm (messages))")
+        #metta.run(f"!(change-state! (user-question) (\"{task['question']}\"))", True)
+        result = metta.run(f"!(respond \"{task['question']}\" \"Services\")", True)
         count += 1
-        if is_correct(repr(result[0][0]), task["services"]):
+        if is_correct(repr(result[1]), task["services"]):
             correct += 1
         else:
-            print(repr(result[0][0]), " ", task["services"])
+            print(repr(result[1]), " ", task["services"])
             print("______________________________")
     if correct > 0:
         print(correct / count)
@@ -84,9 +80,10 @@ if __name__ == '__main__':
     metta_motto_path = os.environ["METTAMOTOPATH"]
     env_builder = hp.Environment.custom_env(include_paths=[metta_motto_path])
     metta = hp.MeTTa(env_builder=env_builder)
+    run_script("prototyping/metta_llm/metta_guidance/question_types_guidance.metta", metta)
     #detect_all_question_types()
-    #answer_specific_service_question()
-    suggest_service()
+    answer_specific_service_question()
+    #suggest_service()
     #answer_platform_question()
 
 

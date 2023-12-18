@@ -4,7 +4,7 @@ SingularityNET (SNET) is an open and decentralized network of AI services made a
 Developers publish their services to the SingularityNET network, where they can be used by anyone with an internet connection.
 Developers are able to charge for the use of their services using the native AGIX token.
 There are next services in snet platform:"
-(get_service_names)
+(get-service-names)
 "User can ask you a questions. There are next types of questions:
 { 'SpecificService': 'The user wants to know some information about specific service, providing the name of the service in the question.
 Note, the name of the service should exactly match to some service from the list above.'},

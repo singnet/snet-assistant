@@ -1,43 +1,30 @@
 import os
-import shutil
-
-import chromadb
-import numpy as np
 import pathlib
 
-from prototyping.assistant_utils.data_processors import OpenAIEmbeddings
 from prototyping.assistant_utils.data_getters.constants import data_dir
 from prototyping.assistant_utils.data_getters.services_information_getter import ServicesInformationGetter, \
     ServicesInformationGetterCreator
-from prototyping.assistant_utils.data_processors import DocProcessor
-from prototyping.assistant_utils.data_processors import AbstractEmbeddings
+
 
 class ServicesDbController:
     '''
     Stores documentation about services in chroma database
     '''
 
-    def __init__(self, embeddings: AbstractEmbeddings, services_information_getter: ServicesInformationGetter):
-        self.embeddings_getter = embeddings
+    def __init__(self, services_information_getter: ServicesInformationGetter):
         self.services_information_getter = services_information_getter
-        db = os.path.join(data_dir, "chroma_db_services")
-        self.collection_name = "services_doc_chunks_collection"
-        need_load_docs = not os.path.exists(db)
-
-        self.chroma_client = chromadb.PersistentClient(db)
-
-        self.collection = self.chroma_client.get_or_create_collection(name=self.collection_name,
-                                                                      metadata={"hnsw:space": "cosine"})
-
-        if not need_load_docs:
-            if self.collection.count() < 10:
-                need_load_docs = True
-                shutil.rmtree(db)
+        self.__docs_folder = os.path.join(data_dir, "services_docs")
+        if os.path.exists(self.__docs_folder):
+            files = os.listdir(self.__docs_folder)
+            need_load_docs = len(files) == 0
+        else:
+            os.mkdir(self.__docs_folder)
+            need_load_docs = True
 
         if need_load_docs:
-            self._load_docs()
+            self.load_docs()
 
-    def _load_docs(self):
+    def load_docs(self):
         '''
             loads all documents into database
         '''
@@ -46,33 +33,22 @@ class ServicesDbController:
         for name in services_names:
             documentation = self.services_information_getter.get_service_documentation(name)
             if documentation is not None:
-                chunks = DocProcessor.get_text_chunks(documentation)
-                if len(chunks) > 0:
-                    embeddings = self.embeddings_getter.get_chunks_embeddings(chunks)
-                    length = len(embeddings)
-                    ids = [f"id{i+j}" for j in range(length)]
-                    i += length
-                    self.collection.add(embeddings=embeddings, documents=chunks,  metadatas=[{'source': name.lower()}]*length, ids=ids)
+                # !!! file name is the as service name but in lower case
+                with open(os.path.join(self.__docs_folder, f"{name.lower()}.txt"), mode="w") as f:
+                    f.write(documentation)
 
-    def get_closest_documentation(self, service_name, question, docs_count=5):
+    @property
+    def services_docs_folder(self):
         '''
-        returns closest (according to embeddings) document for given question about given service.
+              returns path to file contatining information about service.
         '''
-        embeddings_values = self.embeddings_getter.get_embeddings(question)
-        context = self.collection.query(query_embeddings=[embeddings_values], n_results=docs_count, where={"source": service_name.lower()})
-        docs = np.unique(context["documents"][0])
-        res = "\n".join(docs)
-        return res
+        return self.__docs_folder
 
 
 if __name__ == '__main__':
     parent_dir = pathlib.Path(__file__).parent.resolve().parent.parent.parent
     json_dir = f"{parent_dir}/json"
     getter = ServicesInformationGetterCreator.create("json", json_dir)
-    defaulf_embeddings = OpenAIEmbeddings()
-    controller = ServicesDbController(defaulf_embeddings ,getter)
-    text = controller.get_closest_documentation("Image Segmentation", "How to setup Semantic Segmentation service")
+    controller = ServicesDbController(getter)
+    text = controller.services_docs_folder
     print(text)
-
-
-
