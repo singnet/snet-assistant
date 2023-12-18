@@ -33,11 +33,12 @@ class GetterHelper:
     def extract_service_file_name(self, text):
         text = self.cut_history_to_str(text)
         text = repr(text).lower() if not isinstance(text, str) else text.lower()
+        found_service = ""
         for name in self.getter.display_names:
             nm = name.lower()
-            if nm in text:
-                return [ValueAtom(f"{nm}.txt")]
-        return [ValueAtom(None)]
+            if (nm in text) and len(nm) > len(found_service):
+                found_service = nm
+        return [ValueAtom(f"{found_service}.txt")] if len(found_service) > 0 else [ValueAtom(None)]
 
     def concat_strings(self, str1, str2):
         str1 = repr(str1).replace("\"", "")

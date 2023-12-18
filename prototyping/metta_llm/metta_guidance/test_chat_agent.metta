@@ -4,4 +4,3 @@
 !(bind! &chat (metta-chat prototyping/metta_llm/metta_guidance/chat_process.msa))
 ;!(llm (Agent &chat) (user "Can I publish service without using grpc?"))
 ;!(llm (Agent &chat) (user "What is an input of Abstractive Question Answering service on the snet platform?"))
-;!(llm (Agent &chat) (assistant "Hello, I am the SingularityNet AI platform and marketplace assistant. How can I help you?"))

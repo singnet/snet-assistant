@@ -1,5 +1,4 @@
 import os
-
 import hyperon as hp
 import pathlib
 
@@ -19,7 +18,9 @@ if __name__ == '__main__':
     env_builder = hp.Environment.custom_env(include_paths=[metta_motto_path])
     metta = hp.MeTTa(env_builder=env_builder)
     run_script("prototyping/metta_llm/metta_guidance/test_chat_agent.metta", metta)
-    result = (metta.run(f"!(llm (Agent &chat) (system \"It is the beginning of the conversation\"))", True))
+    result = (metta.run(f'''!(llm (Agent (chat-gpt "gpt-3.5-turbo-0613"))(Messages (system 
+                                      "Introduce yourself if it is the beginning of the conversation, 
+                                      and ask the user if he needs your help.")))''', True))
     if len(result) > 0:
         print(result[-1])
     while True:

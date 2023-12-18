@@ -1,4 +1,4 @@
-!(extend-py!  motto.llm_gate)
+!(extend-py! motto.llm_gate)
 !(extend-py! prototyping.assistant_utils.data_getters.data_getter_extension)
 !(import! &service-finder-template prototyping/metta_llm/metta_guidance/templates/service_finder_template.msa)
 
