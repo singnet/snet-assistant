@@ -263,7 +263,8 @@ class APIServicesInformationGetter(ServicesInformationGetter):
         services_info = self.__request_services_info()
         for info in services_info:
             if 'display_name' in info:
-                description_structure = self._create_description_structure(info['display_name'], info)
+                contributors = info["contributors"] if "contributors" in info else None
+                description_structure = self._create_description_structure(info['display_name'], info, contributors)
                 self.services_descriptions.append(description_structure)
                 if info['display_name'] is not None:
                     groups = self.__request_groups_data(info)
