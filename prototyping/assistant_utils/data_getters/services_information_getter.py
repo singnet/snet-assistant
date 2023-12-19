@@ -3,7 +3,7 @@ import logging
 import os
 import urllib
 from abc import abstractmethod
-
+import concurrent.futures
 import pathlib
 import requests
 from bs4 import BeautifulSoup
@@ -19,13 +19,14 @@ class ServiceDescription:
 
 class ServicesInformationGetterCreator:
     @staticmethod
-    def create(getter_type, json_dir=None):
+    def create(json_dir=None):
         ''' json_dir  maybe should be in config'''
-        if getter_type == "json":
+        if not os.path.exists(json_dir):
+            os.mkdir(json_dir)
+        if len(os.listdir(json_dir)) > 0:
             return JSONServicesInformationGetter(json_dir)
-        if getter_type == "api":
-            return APIServicesInformationGetter()
-        return None
+        else:
+            return APIServicesInformationGetter(json_dir)
 
 
 class ServicesInformationGetter:
@@ -230,8 +231,9 @@ class JSONServicesInformationGetter(ServicesInformationGetter):
 class APIServicesInformationGetter(ServicesInformationGetter):
     ''' Loads information about services by use of post request'''
 
-    def __init__(self):
+    def __init__(self, json_dir):
         super().__init__()
+        self.json_dir = json_dir
         self.log = logging.getLogger(__name__ + '.' + type(self).__name__)
         self._load_services_data()
 
@@ -259,13 +261,30 @@ class APIServicesInformationGetter(ServicesInformationGetter):
             return service['groups'][0] if len(service['groups']) > 0 else None
         return None
 
+    def __create_json(self,  info,   service_description_keys):
+        if 'display_name' in info:
+            contributors = info["contributors"] if "contributors" in info else None
+            description_structure = self._create_description_structure(info['display_name'], info, contributors)
+            self.services_descriptions.append(description_structure)
+            if info['display_name'] is not None:
+                groups = self.__request_groups_data(info)
+                info['groups'] = groups if isinstance(groups, list) else [groups]
+                self.services_group_data[info['display_name']] = self.load_groups_data(info['groups'])
+            info["service_description"] = {key: info[key] for key in service_description_keys}
+            for key in service_description_keys:
+                info.pop(key)
+            filename = os.path.join(self.json_dir, f"{info['display_name']}.json")
+            with open(filename, 'w') as f:
+                json_object = json.dumps(info, indent=3)
+                f.write(json_object)
+
     def _load_services_data(self):
         services_info = self.__request_services_info()
-        for info in services_info:
-            if 'display_name' in info:
-                contributors = info["contributors"] if "contributors" in info else None
-                description_structure = self._create_description_structure(info['display_name'], info, contributors)
-                self.services_descriptions.append(description_structure)
-                if info['display_name'] is not None:
-                    groups = self.__request_groups_data(info)
-                    self.services_group_data[info['display_name']] = self.load_groups_data(groups)
+        service_description_keys = ["url", "short_description", "description"]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            for info in services_info:
+                executor.submit(self.__create_json,  info=info,
+                                               service_description_keys=service_description_keys)
+
+
+

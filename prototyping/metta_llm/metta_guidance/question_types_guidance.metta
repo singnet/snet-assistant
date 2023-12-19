@@ -1,4 +1,4 @@
-!(import! &service-finder-template prototyping/metta_llm/metta_guidance/templates/service_finder_template.msa)
+!(import! &service-finder-template prototyping/metta_llm/metta_guidance/templates/service_finder_template_for_tests.msa)
 !(import! &question-type-template prototyping/metta_llm/metta_guidance/templates/question_type_selector_template.msa)
 !(import! &platform-assistant-template prototyping/metta_llm/metta_guidance/templates/platform_assistant_template.msa)
 !(import! &specific-service-template prototyping/metta_llm/metta_guidance/templates/specific_service_template.msa)

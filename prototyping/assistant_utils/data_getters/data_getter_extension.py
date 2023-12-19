@@ -8,7 +8,7 @@ from prototyping.assistant_utils.data_getters.constants import data_dir
 
 class GetterHelper:
     def __init__(self, json_dir):
-        self.getter = ServicesInformationGetterCreator.create("json", json_dir)
+        self.getter = ServicesInformationGetterCreator.create(json_dir)
         self.platform_info_getter = PlatformInformationGetter()
         self.service_db_controller = ServicesDbController(self.getter)
         self.history_length_for_service_name = 5
