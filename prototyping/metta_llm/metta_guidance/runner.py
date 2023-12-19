@@ -1,7 +1,7 @@
 import os
 import hyperon as hp
 import pathlib
-from motto.agents import DialogAgent, ChatGPTAgent
+from motto.agents import DialogAgent
 
 if __name__ == '__main__':
     '''
