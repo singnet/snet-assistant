@@ -18,7 +18,7 @@ class PlatformInformationGetter:
             files = os.listdir(self.__md_docs_folder)
             need_load_docs = len(files) == 0
         else:
-            os.mkdir(self.__md_docs_folder)
+            Path(self.__md_docs_folder).mkdir(parents=True, exist_ok=True)
             need_load_docs = True
 
         if need_load_docs:
