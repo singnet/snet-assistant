@@ -12,17 +12,17 @@
 
 
 !(let $question (new-state "[some question about service]")
-    ( let () (add-atom &self (= (user-question) $question)) (empty))
+    (let () (add-atom &self (= (user-question) $question)) (empty))
  )
 !(let $service_file (new-state "[the name of the file with information about service]")
-    ( let () (add-atom &self (= (current-service-file) $service_file)) (empty))
+    (let () (add-atom &self (= (current-service-file) $service_file)) (empty))
 )
 
 (= (question-type $user-msg)
    (superpose
         (
             (change-state! (user-question) ( $user-msg))
-             (llm &Agent &question-type-template)
+            (llm &Agent &question-type-template)
         )
    )
 )
@@ -34,13 +34,13 @@
 )
 
 (= (add-platform-question-context)
-   (llm  &platform_retrieval (user (user-query)))
+   (llm &platform_retrieval (user (user-query)))
 )
 
 (= (get-prompt-for-service)
     (let $question (user-query)
-        (llm  (Agent &service_retrieval (doc_name (get-state (current-service-file))))
-            (user $question)
+        (llm (Agent &service_retrieval (doc_name (get-state (current-service-file))))
+             (user $question)
         )
     )
 )
