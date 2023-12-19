@@ -1,41 +1,44 @@
 import pathlib
 from hyperon.ext import register_atoms
 from hyperon import *
-from prototyping.assistant_utils import ServicesInformationGetterCreator, OpenAIEmbeddings, ServicesDbController
+from prototyping.assistant_utils import ServicesInformationGetterCreator, ServicesDbController
 from prototyping.assistant_utils import PlatformInformationGetter
+from prototyping.assistant_utils.data_getters.constants import data_dir
 
 
 class GetterHelper:
     def __init__(self, json_dir):
         self.getter = ServicesInformationGetterCreator.create("json", json_dir)
-        defaulf_embeddings = OpenAIEmbeddings()
-        self.platform_info_getter = PlatformInformationGetter(defaulf_embeddings)
-        self.service_db_controller = ServicesDbController(defaulf_embeddings, self.getter)
+        self.platform_info_getter = PlatformInformationGetter()
+        self.service_db_controller = ServicesDbController(self.getter)
+        self.history_length_for_service_name = 5
 
     def get_service_descriptions(self):
         descriptions = self.getter.short_descriptions
-        return [S(str(descriptions))]
+        return [ValueAtom(str(descriptions))]
 
     def get_service_names(self):
         names = self.getter.display_names
         return [S(str(names))]
 
-    def get_service_prompt(self, text):
-        services = ""
-        text = repr(text).lower() if not isinstance(text, str) else text.lower()
-        for name in self.getter.display_names:
-            if (name.lower() in text) and (name not in services):
-                services += f"{name};"
-        services = services[:-1].split(";") if len(services) > 0 else []
+    def cut_history_to_str(self, history):
+        if isinstance(history, str):
+            return history
+        if hasattr(history, 'get_children'):
+            history =  history.get_children()
+            if len(history) > self.history_length_for_service_name:
+                history = history[:self.history_length_for_service_name]
+            return " ".join(repr(value) for value in history)
 
-        promt = ""
-        for service in services:
-            promt += str(self.getter.get_service_full_descriptions(service)) + " "
-            promt += str(self.getter.get_service_group_data(service)) + " "
-            doc = self.service_db_controller.get_closest_documentation(service, text)
-            if doc is not None:
-                promt += doc
-        return [S(str(promt))]
+    def extract_service_file_name(self, text):
+        text = self.cut_history_to_str(text)
+        text = repr(text).lower() if not isinstance(text, str) else text.lower()
+        found_service = ""
+        for name in self.getter.display_names:
+            nm = name.lower()
+            if (nm in text) and len(nm) > len(found_service):
+                found_service = nm
+        return [ValueAtom(f"{found_service}.txt")] if len(found_service) > 0 else [ValueAtom(None)]
 
     def concat_strings(self, str1, str2):
         str1 = repr(str1).replace("\"", "")
@@ -49,16 +52,16 @@ class GetterHelper:
         result = name.replace('"', '').lower() in [nm.lower() for nm in self.getter.display_names]
         return [ValueAtom(result)]
 
-    def get_service_documentation(self, service_name,  prefix):
-        documentation = self.getter.get_service_documentation(service_name)
-        prefix = repr(prefix).replace('"', "") if not isinstance(prefix, str) else prefix
-        return [S(prefix + " " + str(documentation))]
+    def get_service_docs_folder(self):
+        folder = self.service_db_controller.services_docs_folder
+        return [ValueAtom(folder)]
 
-    def get_question_context(self, question):
-        question = repr(question) if not isinstance(question, str) else question
-        context = self.platform_info_getter.get_context(question)
-        return [S(context)]
+    def get_platform_docs_folder(self):
+        folder = self.platform_info_getter.docs_folder
+        return [ValueAtom(folder)]
 
+    def get_data_dir(self):
+        return [ValueAtom(data_dir)]
 
 
 @register_atoms
@@ -68,22 +71,28 @@ def data_getters_atoms():
     getter_helper = GetterHelper(json_dir)
 
     return {
-        'get_service_descriptions':
-            G(OperationObject('get_service_descriptions', getter_helper.get_service_descriptions, unwrap=False)),
+        'get-service-descriptions':
+            G(OperationObject('get-service-descriptions', getter_helper.get_service_descriptions, unwrap=False)),
 
-        'get_service_names':
-            G(OperationObject('get_service_names', getter_helper.get_service_names, unwrap=False)),
+        'get-service-names':
+            G(OperationObject('get-service-names', getter_helper.get_service_names, unwrap=False)),
 
-        'concat_strings':
-            G(OperationObject('concat_strings', lambda str1, str2: getter_helper.concat_strings(str1, str2),
+        'concat-strings':
+            G(OperationObject('concat-strings', lambda str1, str2: getter_helper.concat_strings(str1, str2),
                               unwrap=False)),
-        'is_snet_service':
-            G(OperationObject('is_snet_service', lambda service: getter_helper.is_snet_service(service),
+        'is-snet-service':
+            G(OperationObject('is-snet-service', lambda service: getter_helper.is_snet_service(service),
                               unwrap=False)),
-        'get_question_context':
-            G(OperationObject('get_question_context', lambda question: getter_helper.get_question_context(question),
-                              unwrap=False)),
-        'get_service_prompt':
-            G(OperationObject('get_service_prompt', lambda question: getter_helper.get_service_prompt(question),
+        'get-platform-docs-folder':
+            G(OperationObject('get-platform-docs-folder',  getter_helper.get_platform_docs_folder, unwrap=False)),
+
+        'get-service-docs-folder':
+            G(OperationObject('get-service-docs-folder', getter_helper.get_service_docs_folder, unwrap=False)),
+        'get-data-dir':
+            G(OperationObject('get-data-dir', getter_helper.get_data_dir, unwrap=False)),
+
+        'extract-service-file-name':
+            G(OperationObject('extract-service-file-name', lambda question: getter_helper.extract_service_file_name(
+                question),
                               unwrap=False)),
     }

@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 
 class ServiceDescription:
-    def __init__(self, display_name, url="", short_description="", description="", contributors = []):
+    def __init__(self, display_name, url="", short_description="", description="", contributors=[]):
         self.url = url
         self.short_description = short_description
         self.description = description

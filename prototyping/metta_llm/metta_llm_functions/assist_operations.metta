@@ -10,7 +10,7 @@
    (system "You are the SingularityNet AI platform and marketplace assistant"))
 
 (= (message service-list)
-   (system ("There are next services in snet platform:" (get_service_descriptions) )))
+   (system ("There are next services in snet platform:" (get-service-descriptions) )))
 
 (= (message reply-relevant)
    (system "Reply something relevant to user"))
@@ -21,7 +21,7 @@
 
 
  (= (add_message_for_user (user $msg1) $msg2)
-               (user (concat_strings $msg1 $msg2)))
+               (user (concat-strings $msg1 $msg2)))
 
 (= (find_service_names ("True") (Messages $history $prev-state-msg $user-msg))
    (let $msg (add_message_for_user $user-msg "Your reply should be very short and have a format [a, b,...], where 'a', 'b' are relevant services")
@@ -38,7 +38,7 @@
  )
 
 (= (doc find_service_names)
- (let $services (get_service_names)
+ (let $services (get-service-names)
    (Doc
      (description "You should call this function if user asks to suggest a services")
      (parameters
