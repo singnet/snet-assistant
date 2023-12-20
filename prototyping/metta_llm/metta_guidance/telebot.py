@@ -65,7 +65,7 @@ class AskSNetAgent(threading.Thread):
 
 def get_user_str(update: Update) -> str:
     user = update.effective_user
-    return str(user.id) + "_" + user.username
+    return str(user.id) + "_" + str(user.username)
 
 class AskSNetBot():
 
