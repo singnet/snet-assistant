@@ -20,9 +20,10 @@ from motto.agents import DialogAgent
 
 class AskSNetAgent(threading.Thread):
 
-    def __init__(self, send_message_func):
+    def __init__(self, user_log, send_message_func):
         super().__init__(name='snet assistant', daemon=False)
         self.queue = deque()
+        self.user_log = user_log
         # A callback to send messages, when the response is available
         self.send_message_func = send_message_func
         self._lock = threading.Lock()
@@ -31,12 +32,18 @@ class AskSNetAgent(threading.Thread):
         assistant_dir = str(Path(__file__).parent.resolve().parent.parent.parent)
         self.agent = DialogAgent(path="prototyping/metta_llm/metta_guidance/chat_process.msa",
             include_paths=[metta_motto_path, assistant_dir])
+        self.dia_log("============= START =============")
 
     def queue_message(self, message):
         with self._lock:
             # TODO: max length?
             self.queue.appendleft(message)
         return len(self.queue)-1
+
+    def dia_log(self, text):
+        with self._lock:
+            with open(self.user_log, "a") as f:
+                f.write(f'[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] {text}\n')
 
     def run(self):
         while not self._stop:
@@ -46,10 +53,12 @@ class AskSNetAgent(threading.Thread):
                 # keep the job in the queue until complete
                 with self._lock:
                     data = self.queue[-1]
+                self.dia_log("USER: " + data)
                 result = self.agent(f'(user "{data}")').content
                 with self._lock:
                     self.queue.pop()
                 result = result[-1] if len(result) > 0 else "Sorry, I'm having trouble answering"
+                self.dia_log("SNET: " + str(result))
                 self.send_message_func(result)
             time.sleep(0.2)
 
@@ -146,7 +155,9 @@ class AskSNetBot():
                 user_info['mode'] = 'ignore'
             self.users[user] = user_info
             self.save_user_info(user)
-        self.users[user]['agent'] = AskSNetAgent(lambda msg: self.send_direct_msg(self.users[user]['chat_id'], msg))
+        self.users[user]['agent'] = AskSNetAgent(
+            self.cwd/self.config['logging_dir']/(user+"_"+datetime.today().strftime('%Y-%m-%d')+".log"),
+            lambda msg: self.send_direct_msg(self.users[user]['chat_id'], msg))
         self.users[user]['agent'].start()
         return self.users[user]
 
