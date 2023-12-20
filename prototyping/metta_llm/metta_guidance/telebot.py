@@ -7,7 +7,7 @@ from telegram.ext import (
     filters,
 )
 
-from hyperon import GroundedAtom
+from hyperon import GroundedAtom, E, S, ValueAtom
 from pathlib import Path
 from collections import deque
 from datetime import datetime
@@ -55,7 +55,9 @@ class AskSNetAgent(threading.Thread):
                 with self._lock:
                     data = self.queue[-1]
                 self.dia_log("USER: " + data)
-                result = self.agent(f'(user "{data}")').content
+                msg_atom = E(S("user"), ValueAtom(data))
+                #result = self.agent(f'(user "{data}")').content
+                result = self.agent(msg_atom).content
                 with self._lock:
                     self.queue.pop()
                 result = result[-1] if len(result) > 0 else "Sorry, I'm having trouble answering"
