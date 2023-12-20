@@ -112,11 +112,14 @@ class AskSNetBot():
             if user_info is None or user_info['mode'] != 'respond':
                 return
             user_info = self.get_user_info(update)
-            num = user_info['agent'].queue_message(update.message.text)
-            if num > 0:
-                response = "[Still working on the previous message. This one is queued.]"
+            if len(user_info['agent'].queue) > 1:
+                response = "[The last message will be ignored.]"
             else:
-                return
+                num = user_info['agent'].queue_message(update.message.text)
+                if num > 0:
+                    response = "[Still working on the previous message. This one is queued.]"
+                else:
+                    return
         except Exception as e:
             self.logger.error("EXCEPTION: " + repr(e))
             response = "I'm experiencing problems"
