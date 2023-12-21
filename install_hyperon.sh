@@ -14,7 +14,7 @@
     #source "${HOME}/.cargo/env"
     cargo install cbindgen
 
-    sudo python3 -m pip install conan==1.57
+    sudo python3 -m pip install conan==1.59.0
     export PATH=${PATH}:${HOME}/.local/bin
 
     conan profile new --detect default

@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 COPY ./install_hyperon.sh  /app/install_hyperon.sh
 
@@ -20,7 +20,7 @@ COPY ./prototyping/metta_llm /app/snet-assistant/prototyping/metta_llm
 COPY ./prototyping/assistant_utils /app/snet-assistant/prototyping/assistant_utils
 
 ENV PYTHONPATH "${PYTHONPATH}:/app/snet-assistant"
-RUN pip install openai markdown tiktoken bs4 chromadb
+RUN pip install openai markdown tiktoken bs4 chromadb  pysqlite3-binary
 ENV OPENAI_API_KEY "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"
 
 WORKDIR /app/snet-assistant
