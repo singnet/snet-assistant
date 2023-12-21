@@ -11,11 +11,10 @@ RUN apt-get install -y curl build-essential git
 # clone metta-moto
 WORKDIR /app
 RUN git clone https://github.com/zarqa-ai/metta-motto.git
-#RUN git clone https://github.com/besSveta/metta-motto.git --branch fix_retrieval_agent
 ENV PYTHONPATH "${PYTHONPATH}:/app/metta-motto"
 ENV METTAMOTOPATH "/app/metta-motto"
 
-# Setup requirements
+# copy source code
 COPY ./prototyping/metta_llm /app/snet-assistant/prototyping/metta_llm
 COPY ./prototyping/assistant_utils /app/snet-assistant/prototyping/assistant_utils
 
