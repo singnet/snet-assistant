@@ -34,7 +34,7 @@
     rm -rf build
     mkdir build
     cd ${hdir}/hyperon-experimental/build
-    cmake ..
+    cmake -DCMAKE_BUILD_TYPE=Release ..
     make
     find . -type f ! -name '*.so' -delete
     cd ${hdir}/hyperon-experimental
