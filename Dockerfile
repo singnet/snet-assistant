@@ -20,7 +20,7 @@ COPY ./prototyping/assistant_utils /app/snet-assistant/prototyping/assistant_uti
 
 ENV PYTHONPATH "${PYTHONPATH}:/app/snet-assistant"
 RUN pip install openai markdown tiktoken bs4 chromadb  pysqlite3-binary
-ENV OPENAI_API_KEY "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"
+ENV OPENAI_API_KEY "<put your openai key>"
 
 WORKDIR /app/snet-assistant
 CMD [ "python3", "prototyping/metta_llm/metta_guidance/runner.py"]
