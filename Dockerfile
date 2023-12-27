@@ -1,3 +1,5 @@
+# run with -e OPENAI_API_KEY=$OPENAI_API_KEY.
+
 FROM ubuntu:22.04
 
 COPY ./install_hyperon.sh  /app/install_hyperon.sh
@@ -20,7 +22,6 @@ COPY ./prototyping/assistant_utils /app/snet-assistant/prototyping/assistant_uti
 
 ENV PYTHONPATH "${PYTHONPATH}:/app/snet-assistant"
 RUN pip install openai markdown tiktoken bs4 chromadb  pysqlite3-binary
-ENV OPENAI_API_KEY "<put your openai key>"
 
 WORKDIR /app/snet-assistant
 CMD [ "python3", "prototyping/metta_llm/metta_guidance/runner.py"]
