@@ -102,6 +102,8 @@ class AskSNetBot():
         self.app = Application.builder().token(self.config['bot_key']).build()
         self.app.add_handler(CommandHandler("start", self.start))
         self.app.add_handler(CommandHandler("echo", self.echo, has_args=True))
+        self.app.add_handler(CommandHandler("reset", self.reset))
+        self.app.add_handler(CommandHandler("history", self.history))
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.on_message))
         self.app.run_polling(allowed_updates=Update.ALL_TYPES)
 
@@ -136,6 +138,19 @@ class AskSNetBot():
             await update.message.reply_html(
                 rf"Hello {update.effective_user.mention_html()}!\n" +
                   "You don't need to use commands. Just ask me about the SingularityNET platform and services.")
+
+    async def reset(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        # Remove the user to reinitialize the agent
+        user = get_user_str(update)
+        if user in self.users:
+            self.users.pop(user)
+        self.get_user_info(update)
+        await update.message.reply_text("==== RESET ====")
+
+    async def history(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        info = self.get_user_info(update)
+        await context.bot.send_document(chat_id=update.effective_chat.id,
+                  document=open(info['agent'].user_log, "rt"))
 
     def save_user_info(self, user) -> None:
         if user not in self.users:
