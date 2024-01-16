@@ -40,6 +40,11 @@ class ServicesInformationGetter:
         self.__display_names = []
         self.services_descriptions = []
         self.services_group_data = {}
+        self.raw_url_host = "https://raw.githubusercontent.com"
+        self.git_host = "https://github.com"
+        self.api_host = 'https://api.github.com/repos'
+        api_token = os.environ["GIT_TOKEN"]
+        self.headers = {'Authorization': 'token %s' % api_token}
 
     @abstractmethod
     def _load_services_data(self):
@@ -62,30 +67,55 @@ class ServicesInformationGetter:
                 contributors.append(item)
         return ServiceDescription(display_name, url, short_description, description_, contributors)
 
-    def __get_documentation_from_url(self, url):
 
+    def __parse_page(self, url):
+        '''
+        find link to readme on page with use of BeautifulSoup
+        '''
+        readme_url = None
+        html = urllib.request.urlopen(url).read().decode('utf8')
+        bsObj = BeautifulSoup(html, 'html.parser')
+        links = bsObj.find_all('a')
+        for link in links:
+            if 'href' in link.attrs and link['href'].lower().endswith("readme.md"):
+                readme_url = self.raw_url_host + link.attrs['href'].replace("/blob/", "/")
+                break
+        return readme_url
+
+    def __load_git_contents(self, url):
+        '''
+        use git api to find link to readme
+        '''
+        repo_name = url[url.find(self.git_host) + len(self.git_host):]
+        readme_url = None
+        url = self.api_host + repo_name + "/contents"
+        result = requests.get(url, headers=self.headers)
+        result = json.loads(result.text)
+        if len(result) > 0:
+            for res_dict in result:
+                if ("html_url" in res_dict) and str(res_dict["html_url"]).lower().endswith("readme.md"):
+                    readme_url = res_dict["html_url"]
+                    break
+        return readme_url
+
+    def __get_documentation_from_url(self, url:str):
         # ToDo  need to read documentation from url like https://singnet.github.io/dnn-model-services/users_guide/i3d-video-action-recognition.html
-        git_host = "https://github.com"
-        if git_host not in url:
+
+        if self.git_host not in url:
             return None
         try:
-            raw_url_host = "https://raw.githubusercontent.com"
+
             if not url.lower().endswith(".md"):
-                readme_url = None
-                html = urllib.request.urlopen(url).read().decode('utf8')
-                bsObj = BeautifulSoup(html, 'html.parser')
-                links = bsObj.find_all('a')
-                for link in links:
-                    if 'href' in link.attrs and link['href'].lower().endswith("readme.md"):
-                        readme_url = raw_url_host + link.attrs['href'].replace("/blob/", "/")
-                        break
-                # if readme_url is None and 'tree' in url:
-                #     readme_url = url.replace("tree", "blob") + "/README.md"
+                # readme_url = self.__parse_page(url)
+                # if readme_url is None:
+                readme_url = self.__load_git_contents(url)
+                if (readme_url is None) and ('tree' in url):
+                    readme_url = url.replace("tree", "blob") + "/README.md"
             else:
                 readme_url = url
             if readme_url is not None:
                 content = ""
-                req = urllib.request.Request(readme_url.replace(git_host, raw_url_host).replace("/blob/", "/"))
+                req = urllib.request.Request(readme_url.replace(self.git_host, self.raw_url_host).replace("/blob/", "/"))
                 with urllib.request.urlopen(req) as response:
                     for line in response:
                         decoded_line = line.decode("utf-8")

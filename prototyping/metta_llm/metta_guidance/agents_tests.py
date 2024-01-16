@@ -4,7 +4,6 @@ import os
 
 import hyperon as hp
 from prototyping.metta_llm.metta_llm_functions.service_adviser_test import is_correct
-from prototyping.metta_llm.metta_guidance.runner import run_script
 
 types = {}
 types['services'] = "data_for_tests/which_service_db.json"
@@ -56,6 +55,12 @@ def answer_platform_question():
     json_data = json.dumps(service_questions, indent=2)
     with open(types['snet'], 'w') as f:
         f.write(json_data)
+
+def run_script(path, metta):
+    with open(path, "r") as f:
+        script = f.read()
+    print(metta.run(script))
+
 
 def suggest_service():
     questions = get_user_tasks(types["services"])
