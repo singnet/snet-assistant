@@ -45,6 +45,7 @@ class ServicesInformationGetter:
         self.api_host = 'https://api.github.com/repos'
         api_token = os.environ["GIT_TOKEN"]
         self.headers = {'Authorization': 'token %s' % api_token}
+        self.tree = "/tree/"
 
     @abstractmethod
     def _load_services_data(self):
@@ -86,9 +87,21 @@ class ServicesInformationGetter:
         '''
         use git api to find link to readme
         '''
+        # for the case if we need to specify branch
+        branch = ""
+        indx = url.find(self.tree)
+        if indx > 0:
+            indx = indx + len(self.tree)
+            next_indx = url[indx:].find("/")
+            branch = url[indx:indx + next_indx]
+
         repo_name = url[url.find(self.git_host) + len(self.git_host):]
         readme_url = None
-        url = self.api_host + repo_name + "/contents"
+        url = self.api_host + repo_name
+        if branch:
+            url = url.replace(f"{self.tree}{branch}", "/contents") + f"?ref={branch}"
+        else:
+            url += "/contents"
         result = requests.get(url, headers=self.headers)
         result = json.loads(result.text)
         if len(result) > 0:
