@@ -1,0 +1,80 @@
+!(extend-py! prototyping.assistant_utils.data_getters.data_getter_extension)
+!(import! &service-finder-template templates/service_finder_template.msa)
+!(import! &question-type-template templates/question_type_selector_template.msa)
+!(import! &platform-assistant-template templates/platform_assistant_template.msa)
+!(import! &specific-service-template templates/specific_service_template.msa)
+!(import! &random-question-template templates/random_question_template.msa)
+!(import! &one_agent templates/one_agent.msa)
+
+!(extend-py! motto.llm_gate)
+;!(extend-py! prototyping.metta_llm.metta_guidance.motto1.llm_gate)
+!(bind! &Agent (Agent (chat-gpt "gpt-3.5-turbo-1106")))
+!(bind! &platform_retrieval (Agent (retrieval-agent  (get-platform-docs-folder) 200 10 (get-data-dir))))
+!(bind! &service_retrieval (retrieval-agent  (get-service-docs-folder) 200 10 (get-data-dir)))
+
+
+!(let $question (new-state "[some question about service]")
+    (let () (add-atom &self (= (user-question) $question)) (empty))
+ )
+!(let $service_file (new-state "[the name of the file with information about service]")
+    (let () (add-atom &self (= (current-service-file) $service_file)) (empty))
+)
+
+(= (question-type $user-msg)
+   (superpose
+        (
+            (change-state! (user-question) ( $user-msg))
+            (llm &Agent &question-type-template)
+        )
+   )
+)
+(= (service-descriptions)
+    (get-service-descriptions)
+)
+(= (user-query)
+   (get-state (user-question))
+)
+
+(= (add-platform-question-context)
+   (llm &platform_retrieval (user (user-query)))
+)
+
+(= (get-prompt-for-service)
+    (let $question (user-query)
+        (llm (Agent &service_retrieval (doc_name (get-state (current-service-file))))
+             (user $question)
+        )
+    )
+)
+
+(= (answer_question $type)
+    (case $type (
+        ("Services1" (let $prompt &service-finder-template  (llm &Agent  (Messages (history) $prompt))))
+        ("SNET Platform1" (let $prompt &platform-assistant-template (llm &Agent  (Messages (history) $prompt))))
+        ($_
+                (superpose
+                   (
+                    (let $service_name (extract-service-file-name ((history) (user-query)))
+                        (if ( == $service_name (%void)) (empty) (let () (change-state! (current-service-file) $service_name) (empty)))
+                     )
+                    (let $prompt &one_agent (llm &Agent  (Messages (history) $prompt)) )
+                   )
+                ))
+    ))
+)
+
+(= (respond ($role $message))
+   (case $role (
+        (user (superpose (
+            (let () (change-state! (user-question) $message) (empty))
+            (let $type (llm &Agent &question-type-template)
+                (answer_question $type)
+            ))
+            )
+        )
+        ($_ $message)
+   ))
+)
+
+
+!(Response (respond (messages)))
