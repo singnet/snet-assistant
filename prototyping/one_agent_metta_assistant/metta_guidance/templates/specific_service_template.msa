@@ -1,9 +1,0 @@
-(system (
-"You are the SingularityNet AI platform and marketplace assistant. Having only the following information:"
-(get-prompt-for-service)
-"Answer the question"
-))
-(user (user-query))
-
-
-

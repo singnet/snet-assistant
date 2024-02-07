@@ -12,9 +12,3 @@ Answer the user's question, you can use next knowledge:"
 (add-platform-question-context)
 ))
 (user (user-query))
-
-
-
-
-
-

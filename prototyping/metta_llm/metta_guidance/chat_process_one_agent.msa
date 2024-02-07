@@ -47,21 +47,16 @@
     )
 )
 
-(= (answer_question $type)
-    (case $type (
-        ("Services1" (let $prompt &service-finder-template  (llm &Agent  (Messages (history) $prompt))))
-        ("SNET Platform1" (let $prompt &platform-assistant-template (llm &Agent  (Messages (history) $prompt))))
-        ($_
+(= (answer_question)   
                 (superpose
                    (
                     (let $service_name (extract-service-file-name ((history) (user-query)))
                         (if ( == $service_name (%void)) (empty) (let () (change-state! (current-service-file) $service_name) (empty)))
                      )
-                    (let $prompt &one_agent (llm &Agent  (Messages (history) $prompt)) )
+                    (let $prompt &specific-service-template (llm &Agent  (Messages (history) $prompt)) )
                    )
                 ))
-    ))
-)
+
 
 (= (respond ($role $message))
    (case $role (
