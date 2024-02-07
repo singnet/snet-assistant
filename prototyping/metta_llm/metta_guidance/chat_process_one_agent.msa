@@ -63,7 +63,7 @@
         (user (superpose (
             (let () (change-state! (user-question) $message) (empty))
             (let $type (llm &Agent &question-type-template)
-                (answer_question $type)
+                (answer_question)
             ))
             )
         )
