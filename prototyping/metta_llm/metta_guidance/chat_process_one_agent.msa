@@ -53,7 +53,7 @@
                     (let $service_name (extract-service-file-name ((history) (user-query)))
                         (if ( == $service_name (%void)) (empty) (let () (change-state! (current-service-file) $service_name) (empty)))
                      )
-                    (let $prompt &specific-service-template (llm &Agent  (Messages (history) $prompt)) )
+                    (let $prompt &one_agent (llm &Agent  (Messages (history) $prompt)) )
                    )
                 ))
 
@@ -62,10 +62,8 @@
    (case $role (
         (user (superpose (
             (let () (change-state! (user-question) $message) (empty))
-            (let $type (llm &Agent &question-type-template)
-                (answer_question)
+                            (answer_question)
             ))
-            )
         )
         ($_ $message)
    ))
