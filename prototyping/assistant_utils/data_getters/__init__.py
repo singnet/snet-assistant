@@ -2,3 +2,4 @@ from .services_information_getter import APIServicesInformationGetter, JSONServi
     ServicesInformationGetterCreator
 from .platform_information_getter import PlatformInformationGetter
 from .services_db_controller import ServicesDbController
+from .data_getter_extension import data_getters_atoms
