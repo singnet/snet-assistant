@@ -9,8 +9,7 @@ if __name__ == '__main__':
     '''
     metta_motto_path = os.environ["METTAMOTOPATH"]
     assistant_dir = str(pathlib.Path(__file__).parent.resolve().parent.parent.parent)
-
-    agent = DialogAgent(path="prototyping/metta_llm/metta_guidance/chat_process.msa",
+    agent = DialogAgent(path="prototyping/metta_llm/metta_guidance/chat_process_one_agent.msa",
         include_paths=[metta_motto_path, assistant_dir])
     print("Hello! I am an AI assistant here to help you. How can I assist you today?")
 

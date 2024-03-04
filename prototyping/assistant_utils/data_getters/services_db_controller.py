@@ -2,8 +2,7 @@ import os
 import pathlib
 
 from prototyping.assistant_utils.data_getters.constants import data_dir
-from prototyping.assistant_utils.data_getters.services_information_getter import ServicesInformationGetter, \
-    ServicesInformationGetterCreator
+from prototyping.assistant_utils.data_getters.services_information_getter import ServicesInformationGetter, ServicesInformationGetterCreator
 
 
 class ServicesDbController:
@@ -46,9 +45,10 @@ class ServicesDbController:
 
 
 if __name__ == '__main__':
-    parent_dir = pathlib.Path(__file__).parent.resolve().parent.parent.parent
-    json_dir = f"{parent_dir}/json"
-    getter = ServicesInformationGetterCreator.create(json_dir)
-    controller = ServicesDbController(getter)
-    text = controller.services_docs_folder
-    print(text)
+    print(get_string_value("aa"))
+    # parent_dir = pathlib.Path(__file__).parent.resolve().parent.parent.parent
+    # json_dir = f"{parent_dir}/json"
+    # getter = ServicesInformationGetterCreator.create(json_dir)
+    # controller = ServicesDbController(getter)
+    # text = controller.services_docs_folder
+    # print(text)

@@ -1,5 +1,5 @@
 !(import! &self motto )
-!(import! &self prototyping)
+!(import! &self prototyping:assistant_utils:data_getters)
 ;!(import! &self prototyping.metta_llm.metta_guidance.motto1.llm_gate)
 !(bind! &Agent (Agent (chat-gpt "gpt-3.5-turbo-0613")))
 !(bind! &platform_retrieval (Agent (retrieval-agent  (get-platform-docs-folder) 200 10 (get-data-dir))))
@@ -17,7 +17,7 @@
    (superpose
         (
             (change-state! (user-question) ( $user-msg))
-            (llm &Agent (Script templates/question_type_selector_template.msa))
+            (llm &Agent (Script prototyping/metta_llm/metta_guidance/templates/question_type_selector_template.msa))
         )
    )
 )
@@ -42,18 +42,18 @@
 
 (= (answer_question $type)
     (case $type (
-        ("Services" (llm &Agent  (Messages (history) (Script templates/service_finder_template.msa ))))
-        ("SNET Platform" (llm &Agent  (Messages (history) (Script templates/platform_assistant_template.msa))))
+        ("Services" (llm &Agent  (Messages (history) (Script prototyping/metta_llm/metta_guidance/templates/service_finder_template.msa ))))
+        ("SNET Platform" (llm &Agent  (Messages (history) (Script prototyping/metta_llm/metta_guidance/templates/platform_assistant_template.msa))))
         ("SpecificService"
                 (superpose
                    (
                     (let $service_name (extract-service-file-name ((history) (user-query)))
                         (if ( == $service_name (%void)) (empty) (let () (change-state! (current-service-file) $service_name) (empty)))
                      )
-                    (llm &Agent  (Messages (history) (Script templates/specific_service_template.msa)))
+                    (llm &Agent  (Messages (history) (Script prototyping/metta_llm/metta_guidance/templates/specific_service_template.msa)))
                    )
                 ))
-        ($_ (llm &Agent  (Messages (history) (Script templates/random_question_template.msa))))
+        ($_ (llm &Agent  (Messages (history) (Script prototyping/metta_llm/metta_guidance/templates/random_question_template.msa))))
     ))
 )
 
@@ -61,7 +61,7 @@
    (case $role (
         (user (superpose (
             (let () (change-state! (user-question) $message) (empty))
-            (let $type (llm &Agent (Script templates/question_type_selector_template.msa))
+            (let $type (llm &Agent (Script prototyping/metta_llm/metta_guidance/templates/question_type_selector_template.msa))
                 (answer_question $type)
             ))
             )
