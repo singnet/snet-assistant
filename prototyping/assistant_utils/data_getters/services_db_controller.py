@@ -45,10 +45,9 @@ class ServicesDbController:
 
 
 if __name__ == '__main__':
-    print(get_string_value("aa"))
-    # parent_dir = pathlib.Path(__file__).parent.resolve().parent.parent.parent
-    # json_dir = f"{parent_dir}/json"
-    # getter = ServicesInformationGetterCreator.create(json_dir)
-    # controller = ServicesDbController(getter)
-    # text = controller.services_docs_folder
-    # print(text)
+    parent_dir = pathlib.Path(__file__).parent.resolve().parent.parent.parent
+    json_dir = f"{parent_dir}/json"
+    getter = ServicesInformationGetterCreator.create(json_dir)
+    controller = ServicesDbController(getter)
+    text = controller.services_docs_folder
+    print(text)

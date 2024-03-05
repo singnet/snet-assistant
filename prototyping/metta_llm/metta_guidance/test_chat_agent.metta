@@ -1,5 +1,4 @@
 !(import! &self motto.llm_gate)
-;!(import! &self prototyping.metta_llm.metta_guidance.motto1.llm_gate)
 !(import!  &self prototyping.assistant_utils.data_getters.data_getter_extension)
 !(bind! &chat (metta-chat prototyping/metta_llm/metta_guidance/chat_process.msa))
 ;!(llm (Agent &chat) (user "Can I publish service without using grpc?"))
