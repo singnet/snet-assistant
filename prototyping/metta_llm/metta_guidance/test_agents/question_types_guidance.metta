@@ -1,6 +1,5 @@
-!(import! &self motto.llm_gate)
-;!(import! &self prototyping.metta_llm.metta_guidance.motto1.llm_gate)
-!(import! &self prototyping.assistant_utils.data_getters.data_getter_extension)
+!(import! &self motto)
+!(import! &self prototyping:assistant_utils:data_getters)
 !(bind! &Agent (Agent (chat-gpt "gpt-3.5-turbo-0613")))
 !(bind! &platform_retrieval (Agent (retrieval-agent  (get-platform-docs-folder) 200 10 (get-data-dir))))
 !(bind! &service_retrieval (retrieval-agent  (get-service-docs-folder) 200 10 (get-data-dir)))

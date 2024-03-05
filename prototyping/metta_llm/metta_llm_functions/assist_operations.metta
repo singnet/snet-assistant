@@ -1,5 +1,5 @@
-!(extend-py!  llm_gate)
-!(extend-py! prototyping.assistant_utils.data_getters.data_getter_extension)
+!(import! &self motto )
+!(import! &self prototyping:assistant_utils:data_getters)
 
 (= (append-expr $xs $x)
    (collapse (superpose ((superpose $xs) $x))))
