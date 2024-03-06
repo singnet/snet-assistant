@@ -2,8 +2,7 @@ import os
 import pathlib
 
 from prototyping.assistant_utils.data_getters.constants import data_dir
-from prototyping.assistant_utils.data_getters.services_information_getter import ServicesInformationGetter, \
-    ServicesInformationGetterCreator
+from prototyping.assistant_utils.data_getters.services_information_getter import ServicesInformationGetter, ServicesInformationGetterCreator
 
 
 class ServicesDbController:

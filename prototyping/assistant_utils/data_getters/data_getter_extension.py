@@ -1,9 +1,10 @@
 import pathlib
 from hyperon.ext import register_atoms
 from hyperon import *
-from prototyping.assistant_utils import ServicesInformationGetterCreator, ServicesDbController
-from prototyping.assistant_utils import PlatformInformationGetter
+from prototyping.assistant_utils.data_getters.services_information_getter import ServicesInformationGetterCreator
+from prototyping.assistant_utils.data_getters.platform_information_getter import PlatformInformationGetter
 from prototyping.assistant_utils.data_getters.constants import data_dir
+from prototyping.assistant_utils.data_getters.services_db_controller import ServicesDbController
 
 
 class GetterHelper:

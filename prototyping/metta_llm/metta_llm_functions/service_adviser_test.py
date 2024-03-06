@@ -3,6 +3,8 @@ import os
 
 #import llm_gate
 import hyperon as hp
+import pathlib
+
 
 def get_user_tasks(filename):
     json_file_path = os.path.join(filename)
@@ -38,12 +40,14 @@ if __name__ == '__main__':
     '''
      use services short descriptions as prompt to get service which solves user's task
     '''
-    with open("prototyping/metta_llm/metta_llm/assist_operations.metta", "r") as f:
+    with open("prototyping/metta_llm/metta_llm_functions/assist_operations.metta", "r") as f:
         script = f.read()
-    env_builder = hp.Environment.custom_env(include_paths=["/media/sveta/hdisk4/singnet/hyperon-experimental/python/sandbox/neurospace"])
+    metta_motto_path = os.environ["METTAMOTOPATH"]
+    assistant_dir = str(pathlib.Path(__file__).parent.resolve().parent.parent.parent)
+    env_builder = hp.Environment.custom_env(include_paths=[metta_motto_path, assistant_dir])
     metta = hp.MeTTa(env_builder=env_builder)
     print(metta.run(script))
-    user_tasks = get_user_tasks("prototyping/metta_llm/llm_tests/which_service_db.json")
+    user_tasks = get_user_tasks("data_for_tests/which_service_db.json")
     correct_answers = 0
     for task in user_tasks:
         result = metta.run(f"!(respond init  () \"{task['question']}\")", True)

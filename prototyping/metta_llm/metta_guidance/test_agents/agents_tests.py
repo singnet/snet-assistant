@@ -3,6 +3,8 @@ import os
 
 
 import hyperon as hp
+import pathlib
+
 from prototyping.metta_llm.metta_llm_functions.service_adviser_test import is_correct
 
 types = {}
@@ -83,9 +85,10 @@ if __name__ == '__main__':
      use services short descriptions as prompt to get service which solves user's task
     '''
     metta_motto_path = os.environ["METTAMOTOPATH"]
-    env_builder = hp.Environment.custom_env(include_paths=[metta_motto_path])
+    assistant_dir = str(pathlib.Path(__file__).parent.resolve().parent.parent.parent.parent)
+    env_builder = hp.Environment.custom_env(include_paths=[metta_motto_path, assistant_dir])
     metta = hp.MeTTa(env_builder=env_builder)
-    run_script("prototyping/metta_llm/metta_guidance/question_types_guidance.metta", metta)
+    run_script("prototyping/metta_llm/metta_guidance/test_agents/question_types_guidance.metta", metta)
     #detect_all_question_types()
     answer_specific_service_question()
     #suggest_service()

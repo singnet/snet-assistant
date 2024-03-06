@@ -1,6 +1,5 @@
-!(extend-py! motto.llm_gate)
-;!(extend-py! prototyping.metta_llm.metta_guidance.motto1.llm_gate)
-!(extend-py! prototyping.assistant_utils.data_getters.data_getter_extension)
+!(import! &self motto.llm_gate)
+!(import!  &self prototyping.assistant_utils.data_getters.data_getter_extension)
 !(bind! &chat (metta-chat prototyping/metta_llm/metta_guidance/chat_process.msa))
 ;!(llm (Agent &chat) (user "Can I publish service without using grpc?"))
 ;!(llm (Agent &chat) (user "What is an input of Abstractive Question Answering service on the snet platform?"))
