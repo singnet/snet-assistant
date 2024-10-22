@@ -31,7 +31,7 @@ class AskSNetAgent(threading.Thread):
         self._stop = False
         metta_motto_path = os.environ["METTAMOTOPATH"] if "METTAMOTOPATH" in os.environ else "."
         assistant_dir = str(Path(__file__).parent.resolve().parent.parent.parent)
-        self.agent = DialogAgent(path="prototyping/metta_llm/metta_guidance/chat_process.msa",
+        self.agent = DialogAgent(path="prototyping/metta_llm/metta_guidance/chat_process_one_agent.msa",
             include_paths=[metta_motto_path, assistant_dir])
         self.dia_log("============= START =============")
 
@@ -124,7 +124,7 @@ class AskSNetBot():
                     return
         except Exception as e:
             self.logger.error("EXCEPTION: " + repr(e))
-            response = "I'm experiencing problems"
+            response = "I'm experiencing problems: " + repr(e)
         await update.effective_chat.send_message(response)
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
